@@ -7,7 +7,7 @@
         public string? NotificationText { get; set;}
         public DateTime? NotificationDate { get; set; }
         public bool? NotificationType { get; set;} // unread == 0 / read == 1
-        public int? AccountId { get; set; }
+        public string? AccountId { get; set; }
         public virtual Account? Account { get; set; }
     }
 }

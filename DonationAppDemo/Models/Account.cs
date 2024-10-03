@@ -1,8 +1,10 @@
-﻿namespace DonationAppDemo.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace DonationAppDemo.Models
 {
     public class Account
     {
-        public int Id {  get; set; }
+        [Key]
         public string PhoneNum { get; set; }
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }

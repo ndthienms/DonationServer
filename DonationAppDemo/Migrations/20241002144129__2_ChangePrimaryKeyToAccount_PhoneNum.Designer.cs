@@ -4,6 +4,7 @@ using DonationAppDemo.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DonationAppDemo.Migrations
 {
     [DbContext(typeof(DonationDbContext))]
-    partial class DonationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241002144129__2_ChangePrimaryKeyToAccount_PhoneNum")]
+    partial class _2_ChangePrimaryKeyToAccount_PhoneNum
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

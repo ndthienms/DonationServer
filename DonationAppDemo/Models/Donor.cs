@@ -16,7 +16,7 @@
         public int? CreatedBy { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public int? UpdatedBy { get; set; }
-        public int? AccountId { get; set; }
+        public string? AccountId { get; set; }
         public virtual Account? Account { get; set; }
         public ICollection<RateCampaign>? RateCampaigns { get; set; }
         public ICollection<Donation>? Donations { get; set; }

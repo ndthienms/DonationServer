@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using DonationAppDemo.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +46,14 @@ builder.Services.AddControllers(options =>
 });
 
 // Interface
+/*Dal*/
+builder.Services.AddTransient<IAccountDal, AccountDal>();
+builder.Services.AddTransient<IOrganiserDal, OrganiserDal>();
+builder.Services.AddTransient<IDonorDal, DonorDal>();
+builder.Services.AddTransient<ITransactionDal, TransactionDal>();
+/*Service*/
+builder.Services.AddTransient<IUserAuthenticationService, UserAuthenticationService>();
+builder.Services.AddTransient<IUtilitiesService, UtilitiesService>();
 
 // HttpContext
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();

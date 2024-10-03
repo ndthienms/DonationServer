@@ -1,15 +1,12 @@
 ﻿using CloudinaryDotNet;
 using DonationAppDemo.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace DonationAppDemo.DAL
 {
     public class DonationDbContext : DbContext
     {
-        public DonationDbContext()
-        {
-            
-        }
         public DonationDbContext(DbContextOptions<DonationDbContext> options) : base(options) { }
         public virtual DbSet<DonationAppDemo.Models.Account> Account { get; set; } = null!;
         public virtual DbSet<Admin> Admin { get; set; } = null!;
