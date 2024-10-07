@@ -16,7 +16,7 @@ namespace DonationAppDemo.Services
         public UtilitiesService(IConfiguration config)
         {
             _config = config;
-            Account account = new Account(
+            AccountService account = new Account(
                 _config.GetValue<string>("CloudinarySettings:CloudName"),
                 _config.GetValue<string>("CloudinarySettings:ApiKey"),
                 _config.GetValue<string>("CloudinarySettings:ApiSecret"));

@@ -12,6 +12,11 @@ namespace DonationAppDemo.DAL
         {
             _context = context;
         }
+        public async Task<Organiser?> GetById(int id)
+        {
+            var userInformation = await _context.Organiser.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return userInformation;
+        }
         public async Task<Organiser?> GetByPhoneNum(string phoneNum)
         {
             var userInformation = await _context.Organiser.Where(x => x.AccountId == phoneNum).FirstOrDefaultAsync();
@@ -36,6 +41,80 @@ namespace DonationAppDemo.DAL
                 AccountId = organiserDto.PhoneNum,
             };
             _context.Organiser.Add(organiser);
+            await _context.SaveChangesAsync();
+            return organiser;
+        }
+        public async Task<Organiser> Update(int organiserId, OrganiserDto organiserDto)
+        {
+            var organiser = await _context.Organiser.Where(x => x.Id == organiserId).FirstOrDefaultAsync();
+            if (organiser == null)
+            {
+                throw new Exception($"Not found user id {organiserId}");
+            }
+
+            organiser.Name = organiserDto.Name;
+            organiser.Gender = organiserDto.Gender;
+            organiser.Dob = organiserDto.Dob;
+            organiser.Email = organiserDto.Email;
+            organiser.Address = organiserDto.Address;
+            organiser.Description = organiserDto.Description;
+            organiser.UpdatedDate = DateTime.Now;
+            organiser.UpdatedBy = organiserId;
+
+
+            _context.Organiser.Update(organiser);
+            await _context.SaveChangesAsync();
+            return organiser;
+        }
+        public async Task<Organiser> UpdateApprovement(int organiserId, int adminId)
+        {
+            var organiser = await _context.Organiser.Where(x => x.Id == organiserId).FirstOrDefaultAsync();
+            if (organiser == null)
+            {
+                throw new Exception($"Not found user id {organiserId}");
+            }
+
+            organiser.AcceptedDate = DateTime.Now;
+            organiser.AcceptedBy = adminId;
+
+            _context.Organiser.Update(organiser);
+            await _context.SaveChangesAsync();
+            return organiser;
+        }
+        public async Task<Organiser> UpdateAva(int organiserId, string avaSrc, string avaSrcPublicId)
+        {
+            var organiser = await _context.Organiser.Where(x => x.Id == organiserId).FirstOrDefaultAsync();
+            if (organiser == null)
+            {
+                throw new Exception($"Not found user id {organiserId}");
+            }
+
+            organiser.AvaSrc = avaSrc;
+            organiser.AvaSrcPublicId = avaSrcPublicId;
+            organiser.UpdatedDate = DateTime.Now;
+            organiser.UpdatedBy = organiserId;
+
+
+            _context.Organiser.Update(organiser);
+            await _context.SaveChangesAsync();
+            return organiser;
+        }
+
+        public async Task<Organiser> UpdateCertification(int organiserId, string certificationSrc, string certificationSrcPublicId)
+        {
+            var organiser = await _context.Organiser.Where(x => x.Id == organiserId).FirstOrDefaultAsync();
+            if (organiser == null)
+            {
+                throw new Exception($"Not found user id {organiserId}");
+            }
+
+            organiser.CertificationSrc = certificationSrc;
+            organiser.CertificationSrcPublicId = certificationSrcPublicId;
+            organiser.UpdatedDate = DateTime.Now;
+            organiser.UpdatedBy = organiserId;
+
+
+            _context.Organiser.Update(organiser);
             await _context.SaveChangesAsync();
             return organiser;
         }

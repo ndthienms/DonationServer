@@ -15,6 +15,7 @@ namespace DonationAppDemo.Services
         private readonly IDonorDal _donorDal;
         private readonly ITransactionDal _transactionDal;
         private readonly IUtilitiesService _utilitiesService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IConfiguration _configuration;
 
         public UserAuthenticationService(IAccountDal accountDal,
@@ -22,6 +23,7 @@ namespace DonationAppDemo.Services
             IDonorDal donorDal,
             ITransactionDal transactionDal,
             IUtilitiesService utilitiesService,
+            IHttpContextAccessor httpContextAccessor,
             IConfiguration configuration)
         {
             _accountDal = accountDal;
@@ -29,6 +31,7 @@ namespace DonationAppDemo.Services
             _donorDal = donorDal;
             _transactionDal = transactionDal;
             _utilitiesService = utilitiesService;
+            _httpContextAccessor = httpContextAccessor;
             _configuration = configuration;
         }
         public async Task<string> CheckExistedUser(string phoneNum)
@@ -196,6 +199,25 @@ namespace DonationAppDemo.Services
             var tokenAsString = new JwtSecurityTokenHandler().WriteToken(token);
 
             return tokenAsString;
+        }
+        public async Task<bool> UpdateApprovementOrganiser(string phoneNum, int organiserId)
+        {
+            // Get current user
+            var handler = new JwtSecurityTokenHandler();
+            string authHeader = _httpContextAccessor.HttpContext.Request.Headers["Authorization"];
+            authHeader = authHeader.Replace("Bearer ", "");
+            var jsonToken = handler.ReadToken(authHeader);
+            var tokenS = handler.ReadJwtToken(authHeader) as JwtSecurityToken;
+            var currentUserId = tokenS.Claims.First(claim => claim.Type == "Id").Value.ToString();
+
+            // Approve organiser
+            var result = await _transactionDal.UpdateAccountOrganiserApprovement(organiserId, Int32.Parse(currentUserId), phoneNum);
+            if (!result)
+            {
+                throw new Exception($"Cannot approve organiser {organiserId}");
+            }
+
+            return result;
         }
     }
 }

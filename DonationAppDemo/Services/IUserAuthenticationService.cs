@@ -8,5 +8,6 @@ namespace DonationAppDemo.Services
         Task<OrganiserDto> SignUpOrganiser(SignUpOrganiserDto signUpOrganiserDto);
         Task<DonorDto> SignUpDonor(SignUpDonorDto signUpDonorDto);
         Task<string> SignIn(SignInDto signInDto);
+        Task<bool> UpdateApprovementOrganiser(string phoneNum, int organiserId); //admin
     }
 }

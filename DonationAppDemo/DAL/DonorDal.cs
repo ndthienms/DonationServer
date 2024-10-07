@@ -12,6 +12,11 @@ namespace DonationAppDemo.DAL
         {
             _context = context;
         }
+        public async Task<Donor?> GetById(int id)
+        {
+            var userInformation = await _context.Donor.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return userInformation;
+        }
         public async Task<Donor?> GetByPhoneNum(string phoneNum)
         {
             var userInformation = await _context.Donor.Where(x => x.AccountId == phoneNum).FirstOrDefaultAsync();
@@ -33,6 +38,45 @@ namespace DonationAppDemo.DAL
                 AccountId = donorDto.PhoneNum,
             };
             _context.Donor.Add(donor);
+            await _context.SaveChangesAsync();
+            return donor;
+        }
+        public async Task<Donor> Update(int donorId, DonorDto donorDto)
+        {
+            var donor = await _context.Donor.Where(x => x.Id == donorId).FirstOrDefaultAsync();
+            if (donor == null)
+            {
+                throw new Exception($"Not found user id {donorId}");
+            }
+
+            donor.Name = donorDto.Name;
+            donor.Gender = donorDto.Gender;
+            donor.Dob = donorDto.Dob;
+            donor.Email = donorDto.Email;
+            donor.Address = donorDto.Address;
+            donor.UpdatedDate = DateTime.Now;
+            donor.UpdatedBy = donorId;
+
+
+            _context.Donor.Update(donor);
+            await _context.SaveChangesAsync();
+            return donor;
+        }
+        public async Task<Donor> UpdateAva(int donorId, string avaSrc, string avaSrcPublicId)
+        {
+            var donor = await _context.Donor.Where(x => x.Id == donorId).FirstOrDefaultAsync();
+            if (donor == null)
+            {
+                throw new Exception($"Not found user id {donorId}");
+            }
+
+            donor.AvaSrc = avaSrc;
+            donor.AvaSrcPublicId = avaSrcPublicId;
+            donor.UpdatedDate = DateTime.Now;
+            donor.UpdatedBy = donorId;
+
+
+            _context.Donor.Update(donor);
             await _context.SaveChangesAsync();
             return donor;
         }

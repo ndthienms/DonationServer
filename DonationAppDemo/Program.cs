@@ -53,6 +53,9 @@ builder.Services.AddTransient<IDonorDal, DonorDal>();
 builder.Services.AddTransient<ITransactionDal, TransactionDal>();
 /*Service*/
 builder.Services.AddTransient<IUserAuthenticationService, UserAuthenticationService>();
+builder.Services.AddTransient<IAccountService, AccountService>();
+builder.Services.AddTransient<IDonorService, DonorService>();
+builder.Services.AddTransient<IOrganiserService, OrganiserService>();
 builder.Services.AddTransient<IUtilitiesService, UtilitiesService>();
 
 // HttpContext

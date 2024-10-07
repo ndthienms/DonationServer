@@ -7,5 +7,7 @@ namespace DonationAppDemo.DAL
     {
         Task<Account?> Get(string phoneNum);
         Task<Account> Add(AccountDto accountDto);
+        Task<bool> UpdateDisabledAccount(string phoneNum, bool disabled);
+        Task<bool> Delete(string phoneNum);
     }
 }

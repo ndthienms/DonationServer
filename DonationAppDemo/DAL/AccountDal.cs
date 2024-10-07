@@ -37,5 +37,30 @@ namespace DonationAppDemo.DAL
             await _context.SaveChangesAsync();
             return account;
         }
+        public async Task<bool> UpdateDisabledAccount(string phoneNum, bool disabled)
+        {
+            var account = await _context.Account.Where(x => x.PhoneNum == phoneNum).FirstOrDefaultAsync();
+            if (account == null)
+            {
+                throw new Exception($"Not found user's phone number {phoneNum}");
+            }
+
+            account.disabled = disabled;
+
+            _context.Account.Update(account);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        public async Task<bool> Delete(string phoneNum)
+        {
+            var account = await _context.Account.Where(x => x.PhoneNum == phoneNum).FirstOrDefaultAsync();
+            if (account == null)
+            {
+                throw new Exception($"Not found user's phone number {phoneNum}");
+            }
+            _context.Account.Remove(account);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }
