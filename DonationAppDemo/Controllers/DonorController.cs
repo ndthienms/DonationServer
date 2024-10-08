@@ -32,7 +32,7 @@ namespace DonationAppDemo.Controllers
         }
 
         [HttpGet]
-        [Route("GetById")]
+        [Route("GetById/{donorId}")]
         public async Task<IActionResult> GetById([FromRoute]int donorId)
         {
             try
@@ -47,8 +47,8 @@ namespace DonationAppDemo.Controllers
         }
 
         [HttpPut]
-        [Route("Update")]
-        public async Task<IActionResult> Update([FromBody] int donorId, [FromBody] DonorDto donorDto)
+        [Route("Update/{donorId}")]
+        public async Task<IActionResult> Update([FromRoute] int donorId, [FromBody] DonorDto donorDto)
         {
             try
             {
@@ -62,8 +62,8 @@ namespace DonationAppDemo.Controllers
         }
 
         [HttpPut]
-        [Route("UpdateAva")]
-        public async Task<IActionResult> UpdateAva([FromBody] int donorId, [FromBody] IFormFile avaFile)
+        [Route("UpdateAva/{donorId}")]
+        public async Task<IActionResult> UpdateAva([FromRoute] int donorId, [FromBody] IFormFile avaFile)
         {
             try
             {

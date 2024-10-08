@@ -20,7 +20,7 @@ namespace DonationAppDemo.Controllers
         }
 
         [HttpGet]
-        [Route("Get")]
+        [Route("Get/{phoneNum}")]
         public async Task<IActionResult> Get([FromRoute] string phoneNum)
         {
             try
@@ -35,7 +35,7 @@ namespace DonationAppDemo.Controllers
         }
 
         [HttpDelete]
-        [Route("Delete")]
+        [Route("Delete/{phoneNum}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]
         public async Task<IActionResult> Delete([FromRoute]string phoneNum)
         {
@@ -66,9 +66,9 @@ namespace DonationAppDemo.Controllers
         }
 
         [HttpPut]
-        [Route("UpdateDisabledAccount")]
+        [Route("UpdateDisabledAccount/{phoneNum}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]
-        public async Task<IActionResult> UpdateDisabledAccount([FromBody] string phoneNum, [FromBody] bool disabled)
+        public async Task<IActionResult> UpdateDisabledAccount([FromRoute] string phoneNum, [FromBody] bool disabled)
         {
             try
             {

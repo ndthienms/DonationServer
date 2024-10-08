@@ -1,6 +1,5 @@
 ﻿using Twilio.Rest.Verify.V2.Service;
 using Twilio;
-using static System.Net.WebRequestMethods;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using System.Security.Cryptography;
@@ -16,7 +15,7 @@ namespace DonationAppDemo.Services
         public UtilitiesService(IConfiguration config)
         {
             _config = config;
-            AccountService account = new Account(
+            Account account = new Account(
                 _config.GetValue<string>("CloudinarySettings:CloudName"),
                 _config.GetValue<string>("CloudinarySettings:ApiKey"),
                 _config.GetValue<string>("CloudinarySettings:ApiSecret"));

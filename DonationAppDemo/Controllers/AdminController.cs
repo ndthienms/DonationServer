@@ -35,7 +35,7 @@ namespace DonationAppDemo.Controllers
         }
 
         [HttpGet]
-        [Route("GetById")]
+        [Route("GetById/{adminId}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]
         public async Task<IActionResult> GetById([FromRoute] int adminId)
         {
@@ -51,9 +51,9 @@ namespace DonationAppDemo.Controllers
         }
 
         [HttpPut]
-        [Route("Update")]
+        [Route("Update/{adminId}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]
-        public async Task<IActionResult> Update([FromBody] int adminId, [FromBody] AdminDto adminDto)
+        public async Task<IActionResult> Update([FromRoute] int adminId, [FromBody] AdminDto adminDto)
         {
             try
             {

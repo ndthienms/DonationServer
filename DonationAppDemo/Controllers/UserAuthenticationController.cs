@@ -81,9 +81,9 @@ namespace DonationAppDemo.Controllers
         }
 
         [HttpPut]
-        [Route("UpdateApprovementOrganiser")]
+        [Route("UpdateApprovementOrganiser/{phoneNum}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]
-        public async Task<IActionResult> UpdateApprovementOrganiser([FromBody]string phoneNum, [FromBody]int organiserId)
+        public async Task<IActionResult> UpdateApprovementOrganiser([FromRoute]string phoneNum, [FromBody]int organiserId)
         {
             try
             {
