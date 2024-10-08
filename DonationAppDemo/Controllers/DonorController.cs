@@ -63,7 +63,7 @@ namespace DonationAppDemo.Controllers
 
         [HttpPut]
         [Route("UpdateAva/{donorId}")]
-        public async Task<IActionResult> UpdateAva([FromRoute] int donorId, [FromBody] IFormFile avaFile)
+        public async Task<IActionResult> UpdateAva([FromRoute] int donorId, IFormFile avaFile)
         {
             try
             {

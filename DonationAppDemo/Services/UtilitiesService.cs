@@ -57,8 +57,8 @@ namespace DonationAppDemo.Services
                 var uploadParams = new ImageUploadParams
                 {
                     File = new FileDescription(photo.FileName, stream),
-                    Transformation = new Transformation()
-                        .Height(1517).Width(1024)
+                    /*Transformation = new Transformation()
+                        .Height(1517).Width(1024)*/
                 };
                 uploadResult = await _cloudinary.UploadAsync(uploadParams);
             }
