@@ -5,6 +5,7 @@ namespace DonationAppDemo.Services
 {
     public interface IOrganiserService
     {
+        Task<List<Organiser>> GetAll();
         Task<Organiser?> GetById(int organiserId);
         Task<Organiser> Update(int organiserId, OrganiserDto organiserDto);
         Task<Organiser> UpdateAva(int organiserId, IFormFile avaFile);

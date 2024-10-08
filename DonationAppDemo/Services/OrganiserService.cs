@@ -20,6 +20,12 @@ namespace DonationAppDemo.Services
             _httpContextAccessor = httpContextAccessor;
             _utilitiesService = utilitiesService;
         }
+        public async Task<List<Organiser>> GetAll()
+        {
+            var organisers = await _organiserDal.GetAll();
+
+            return organisers;
+        }
         public async Task<Organiser?> GetById(int organiserId)
         {
             var organiser = await _organiserDal.GetById(organiserId);

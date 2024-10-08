@@ -5,6 +5,7 @@ namespace DonationAppDemo.DAL
 {
     public interface IOrganiserDal
     {
+        Task<List<Organiser>> GetAll();
         Task<Organiser?> GetById(int id);
         Task<Organiser?> GetByPhoneNum(string phoneNum);
         Task<Organiser> Add(OrganiserDto organiserDto, string? certificationPublicId);

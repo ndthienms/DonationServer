@@ -12,6 +12,11 @@ namespace DonationAppDemo.DAL
         {
             _context = context;
         }
+        public async Task<List<Organiser>> GetAll()
+        {
+            var usersInformation = await _context.Organiser.ToListAsync();
+            return usersInformation;
+        }
         public async Task<Organiser?> GetById(int id)
         {
             var userInformation = await _context.Organiser.Where(x => x.Id == id).FirstOrDefaultAsync();

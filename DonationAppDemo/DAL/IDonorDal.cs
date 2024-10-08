@@ -5,6 +5,7 @@ namespace DonationAppDemo.DAL
 {
     public interface IDonorDal
     {
+        Task<List<Donor>> GetAll();
         Task<Donor?> GetById(int id);
         Task<Donor?> GetByPhoneNum(string phoneNum);
         Task<Donor> Add(DonorDto donorDto);

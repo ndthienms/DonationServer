@@ -1,4 +1,5 @@
-﻿using DonationAppDemo.Models;
+﻿using DonationAppDemo.DTOs;
+using DonationAppDemo.Models;
 using DonationAppDemo.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -17,14 +18,45 @@ namespace DonationAppDemo.Controllers
         {
             _accountService = accountService;
         }
-        
+
+        [HttpGet]
+        [Route("Get")]
+        public async Task<IActionResult> Get([FromRoute] string phoneNum)
+        {
+            try
+            {
+                var result = await _accountService.Get(phoneNum);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpDelete]
         [Route("Delete")]
-        public async Task<IActionResult> Delete([FromBody]string phoneNum)
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]
+        public async Task<IActionResult> Delete([FromRoute]string phoneNum)
         {
             try
             {
                 var result = await _accountService.Delete(phoneNum);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete]
+        [Route("DeletePersonalAccount")]
+        public async Task<IActionResult> DeletePersonalAccount()
+        {
+            try
+            {
+                var result = await _accountService.DeletePersonalAccount();
                 return Ok(result);
             }
             catch (Exception ex)
@@ -56,6 +88,36 @@ namespace DonationAppDemo.Controllers
             try
             {
                 var result = await _accountService.UpdateDisabledPersonalAccount(disabled);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("AddOrganiserAccount")]
+        public async Task<IActionResult> AddOrganiserAccount([FromBody] SignUpOrganiserDto signUpOrganiserDto)
+        {
+            try
+            {
+                var result = await _accountService.AddOrganiserAccount(signUpOrganiserDto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("AddDonorAccount")]
+        public async Task<IActionResult> AddDonorAccount([FromBody] SignUpDonorDto signUpDonorDto)
+        {
+            try
+            {
+                var result = await _accountService.AddDonorAccount(signUpDonorDto);
                 return Ok(result);
             }
             catch (Exception ex)

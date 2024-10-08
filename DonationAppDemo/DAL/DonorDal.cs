@@ -12,6 +12,11 @@ namespace DonationAppDemo.DAL
         {
             _context = context;
         }
+        public async Task<List<Donor>> GetAll()
+        {
+            var usersInformation = await _context.Donor.ToListAsync();
+            return usersInformation;
+        }
         public async Task<Donor?> GetById(int id)
         {
             var userInformation = await _context.Donor.Where(x => x.Id == id).FirstOrDefaultAsync();
@@ -56,7 +61,6 @@ namespace DonationAppDemo.DAL
             donor.Address = donorDto.Address;
             donor.UpdatedDate = DateTime.Now;
             donor.UpdatedBy = donorId;
-
 
             _context.Donor.Update(donor);
             await _context.SaveChangesAsync();

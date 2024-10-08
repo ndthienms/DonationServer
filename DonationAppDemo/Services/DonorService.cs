@@ -19,6 +19,12 @@ namespace DonationAppDemo.Services
             _utilitiesService = utilitiesService;
             _httpContextAccessor = httpContextAccessor;
         }
+        public async Task<List<Donor>> GetAll()
+        {
+            var donors = await _donorDal.GetAll();
+
+            return donors;
+        }
         public async Task<Donor?> GetById(int donorId)
         {
             var donor = await _donorDal.GetById(donorId);

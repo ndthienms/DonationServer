@@ -17,8 +17,23 @@ namespace DonationAppDemo.Controllers
         }
 
         [HttpGet]
+        [Route("GetAll")]
+        public async Task<IActionResult> GetAll()
+        {
+            try
+            {
+                var result = await _donorService.GetAll();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
         [Route("GetById")]
-        public async Task<IActionResult> GetById([FromBody]int donorId)
+        public async Task<IActionResult> GetById([FromRoute]int donorId)
         {
             try
             {
