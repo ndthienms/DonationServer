@@ -48,12 +48,14 @@ builder.Services.AddControllers(options =>
 // Interface
 /*Dal*/
 builder.Services.AddTransient<IAccountDal, AccountDal>();
+builder.Services.AddTransient<IAdminDal, AdminDal>();
 builder.Services.AddTransient<IOrganiserDal, OrganiserDal>();
 builder.Services.AddTransient<IDonorDal, DonorDal>();
 builder.Services.AddTransient<ITransactionDal, TransactionDal>();
 /*Service*/
 builder.Services.AddTransient<IUserAuthenticationService, UserAuthenticationService>();
 builder.Services.AddTransient<IAccountService, AccountService>();
+builder.Services.AddTransient<IAdminService, AdminService>();
 builder.Services.AddTransient<IDonorService, DonorService>();
 builder.Services.AddTransient<IOrganiserService, OrganiserService>();
 builder.Services.AddTransient<IUtilitiesService, UtilitiesService>();

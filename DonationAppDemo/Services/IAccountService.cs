@@ -12,5 +12,6 @@ namespace DonationAppDemo.Services
         Task<bool> UpdateDisabledPersonalAccount(bool disabled); // self-user
         Task<OrganiserDto> AddOrganiserAccount(SignUpOrganiserDto signUpOrganiserDto); // admin
         Task<DonorDto> AddDonorAccount(SignUpDonorDto signUpDonorDto); // admin
+        Task<AdminDto> AddAdminAccount(SignUpAdminDto signUpAdminDto); // admin
     }
 }

@@ -6,16 +6,19 @@ namespace DonationAppDemo.DAL
     {
         private readonly DonationDbContext _context;
         private readonly IAccountDal _accountDal;
+        private readonly IAdminDal _adminDal;
         private readonly IDonorDal _donorDal;
         private readonly IOrganiserDal _organiserDal;
 
         public TransactionDal(DonationDbContext context,
             IAccountDal accountDal,
+            IAdminDal adminDal,
             IDonorDal donorDal,
             IOrganiserDal organiserDal)
         {
             _context = context;
             _accountDal = accountDal;
+            _adminDal = adminDal;
             _donorDal = donorDal;
             _organiserDal = organiserDal;
         }
@@ -69,6 +72,27 @@ namespace DonationAppDemo.DAL
                 {
                     await _accountDal.Add(accountDto);
                     await _donorDal.Add(donorDto);
+
+                    transaction.Commit();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    return false;
+                }
+            }
+        }
+
+        // Account + Admin
+        public async Task<bool> AccountAdmin(AccountDto accountDto, AdminDto adminDto)
+        {
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    await _accountDal.Add(accountDto);
+                    await _adminDal.Add(adminDto);
 
                     transaction.Commit();
                     return true;

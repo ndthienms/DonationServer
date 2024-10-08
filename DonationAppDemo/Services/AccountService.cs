@@ -179,5 +179,45 @@ namespace DonationAppDemo.Services
             }
             return donorDto;
         }
+        public async Task<AdminDto> AddAdminAccount(SignUpAdminDto signUpAdminDto)
+        {
+            // Check existed account
+            var user = await _accountDal.Get(signUpAdminDto.PhoneNum);
+            if (user != null)
+            {
+                throw new Exception("TThis account is existed");
+            }
+
+            // Hash password
+            var hashSaltResult = _utilitiesService.HMACSHA512(signUpAdminDto.Password);
+
+            // DonorDto
+            var adminDto = new AdminDto()
+            {
+                PhoneNum = signUpAdminDto.PhoneNum,
+                Name = signUpAdminDto.Name,
+                Gender = signUpAdminDto.Gender,
+                Dob = signUpAdminDto.Dob,
+                Email = signUpAdminDto.Email
+            };
+
+            // AccountDto
+            var accountDto = new AccountDto()
+            {
+                PhoneNum = signUpAdminDto.PhoneNum,
+                PasswordHash = hashSaltResult.hashedCode,
+                PasswordSalt = hashSaltResult.keyCode,
+                Role = "admin",
+                Disabled = false
+            };
+
+            // Add to account and organiser table in db
+            var transactionResult = await _transactionDal.AccountAdmin(accountDto, adminDto);
+            if (transactionResult == false)
+            {
+                throw new Exception("Sign up failed");
+            }
+            return adminDto;
+        }
     }
 }

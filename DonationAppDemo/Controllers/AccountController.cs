@@ -98,6 +98,7 @@ namespace DonationAppDemo.Controllers
 
         [HttpPost]
         [Route("AddOrganiserAccount")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]
         public async Task<IActionResult> AddOrganiserAccount([FromBody] SignUpOrganiserDto signUpOrganiserDto)
         {
             try
@@ -113,11 +114,28 @@ namespace DonationAppDemo.Controllers
 
         [HttpPost]
         [Route("AddDonorAccount")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]
         public async Task<IActionResult> AddDonorAccount([FromBody] SignUpDonorDto signUpDonorDto)
         {
             try
             {
                 var result = await _accountService.AddDonorAccount(signUpDonorDto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("AddAdminAccount")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]
+        public async Task<IActionResult> AddAdminAccount([FromBody] SignUpAdminDto signUpAdminDto)
+        {
+            try
+            {
+                var result = await _accountService.AddAdminAccount(signUpAdminDto);
                 return Ok(result);
             }
             catch (Exception ex)
