@@ -26,6 +26,6 @@
         public ICollection<ImageCampaign>? ImageCampaigns { get; set; }
         public ICollection<RateCampaign>? RateCampaigns { get; set;}
         public ICollection<Donation>? Donations { get; set; }
-        public ICollection<Expense>? Payments { get; set; }
+        public ICollection<Expense>? Expenses { get; set; }
     }
 }

@@ -24,6 +24,6 @@
         public string? AccountId { get; set; }
         public virtual Account? Account { get; set; }
         public ICollection<Campaign>? Campaigns { get; set; }
-        public ICollection<Expense>? Payments { get; set; }
+        public ICollection<Expense>? Expenses { get; set; }
     }
 }
