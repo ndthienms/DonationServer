@@ -96,7 +96,7 @@ namespace DonationAppDemo.Services
             }
 
             // Hash password
-            var hashSaltResult = _utilitiesService.HMACSHA512(signUpOrganiserDto.Password);
+            var hashSaltResult = Helper.DataEncryptionExtensions.HMACSHA512(signUpOrganiserDto.Password);
 
             // Add certification image to cloudinary
             var uploadImageResult = await _utilitiesService.CloudinaryUploadPhotoAsync(signUpOrganiserDto.CertificationFile);
@@ -148,7 +148,7 @@ namespace DonationAppDemo.Services
             }
 
             // Hash password
-            var hashSaltResult = _utilitiesService.HMACSHA512(signUpDonorDto.Password);
+            var hashSaltResult = Helper.DataEncryptionExtensions.HMACSHA512(signUpDonorDto.Password);
 
             // DonorDto
             var donorDto = new DonorDto()
@@ -189,7 +189,7 @@ namespace DonationAppDemo.Services
             }
 
             // Hash password
-            var hashSaltResult = _utilitiesService.HMACSHA512(signUpAdminDto.Password);
+            var hashSaltResult = Helper.DataEncryptionExtensions.HMACSHA512(signUpAdminDto.Password);
 
             // DonorDto
             var adminDto = new AdminDto()

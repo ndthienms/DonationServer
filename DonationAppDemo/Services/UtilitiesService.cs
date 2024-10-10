@@ -4,6 +4,12 @@ using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using System.Security.Cryptography;
 using DonationAppDemo.DTOs;
+using DonationAppDemo.Helper;
+using System;
+using Twilio.TwiML.Voice;
+using Twilio.Http;
+//using DonationAppDemo.Models;
+using Twilio.Jwt.AccessToken;
 
 namespace DonationAppDemo.Services
 {
@@ -69,35 +75,6 @@ namespace DonationAppDemo.Services
             var deleteParams = new DeletionParams(publicId);
             var deleteResult = await _cloudinary.DestroyAsync(deleteParams);
             return deleteResult;
-        }
-        public HashSaltDto HMACSHA512(string code)
-        {
-            byte[] codeHash, codeKey;
-            using (var hmac = new HMACSHA512())
-            {
-                codeKey = hmac.Key;
-                codeHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(code));
-            }
-            return new HashSaltDto
-            {
-                hashedCode = codeHash,
-                keyCode = codeKey
-            };
-        }
-        public bool MatchCodeHash(string code, byte[] hashedCode, byte[] keyCode)
-        {
-            using (var hmac = new HMACSHA512(keyCode))
-            {
-                var codeHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(code));
-                for (int i = 0; i < codeHash.Length; i++)
-                {
-                    if (codeHash[i] != hashedCode[i])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
         }
     }
 }

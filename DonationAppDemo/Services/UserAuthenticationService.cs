@@ -56,7 +56,7 @@ namespace DonationAppDemo.Services
             }
 
             // Hash password
-            var hashSaltResult = _utilitiesService.HMACSHA512(signUpOrganiserDto.Password);
+            var hashSaltResult = Helper.DataEncryptionExtensions.HMACSHA512(signUpOrganiserDto.Password);
 
             // Add certification image to cloudinary
             var uploadImageResult = await _utilitiesService.CloudinaryUploadPhotoAsync(signUpOrganiserDto.CertificationFile);
@@ -107,7 +107,7 @@ namespace DonationAppDemo.Services
             }
 
             // Hash password
-            var hashSaltResult = _utilitiesService.HMACSHA512(signUpDonorDto.Password);
+            var hashSaltResult = Helper.DataEncryptionExtensions.HMACSHA512(signUpDonorDto.Password);
 
             // DonorDto
             var donorDto = new DonorDto()
@@ -150,7 +150,7 @@ namespace DonationAppDemo.Services
             {
                 throw new Exception("Account has been locked or not approved");
             }
-            if (!_utilitiesService.MatchCodeHash(signInDto.Password, user.PasswordHash, user.PasswordSalt))
+            if (!Helper.DataEncryptionExtensions.MatchCodeHashHMACSHA512(signInDto.Password, user.PasswordHash, user.PasswordSalt))
             {
                 throw new Exception("Password is not corrected");
             }

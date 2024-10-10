@@ -13,6 +13,8 @@
         //public int? City { get; set; } //optional
         public int? StatusCampaignId { get; set; }
         public decimal? TargetAmount { get; set; }
+        public string? CoverSrc { get; set; }
+        public string? CoverSrcPublicId { get; set; }
         public int? OrganiserId { get; set; }
         public DateTime? CreatedDate { get; set; }
         public int? CreatedBy { get; set; }
@@ -24,6 +26,6 @@
         public ICollection<ImageCampaign>? ImageCampaigns { get; set; }
         public ICollection<RateCampaign>? RateCampaigns { get; set;}
         public ICollection<Donation>? Donations { get; set; }
-        public ICollection<Payment>? Payments { get; set; }
+        public ICollection<Expense>? Payments { get; set; }
     }
 }
