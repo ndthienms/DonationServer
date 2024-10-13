@@ -8,6 +8,7 @@ namespace DonationAppDemo.Services
         Task<Campaign> CreateCampaign(CampaignDto campaignDto);
         Task<bool> DeleteCampaign(CampaignDto campaignDto);
         Task<RateCampaign> RateCampaign(RateCampaignDto rateCampaignDto);
+        Task<List<ImageCampaign>> AddListImageCampaign(List<ImageCampaignDto> listImageCampaignDto);
 
     }
 }
