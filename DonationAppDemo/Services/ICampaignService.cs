@@ -1,6 +1,13 @@
-﻿namespace DonationAppDemo.Services
+﻿using DonationAppDemo.DTOs;
+using DonationAppDemo.Models;
+
+namespace DonationAppDemo.Services
 {
     public interface ICampaignService
     {
+        Task<Campaign> CreateCampaign(CampaignDto campaignDto);
+        Task<bool> DeleteCampaign(CampaignDto campaignDto);
+        Task<RateCampaign> RateCampaign(RateCampaignDto rateCampaignDto);
+
     }
 }

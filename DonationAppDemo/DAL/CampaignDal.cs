@@ -7,24 +7,13 @@ namespace DonationAppDemo.DAL
     public class CampaignDal : ICampaignDal
     {
         private readonly DonationDbContext _context;
-
-        public async Task<Campaign> Add(CampaignDto campaignDto)
+        public CampaignDal(DonationDbContext context)
         {
-            var campaign = new Campaign()
-            {
-                Id = campaignDto.Id,
-                Title = campaignDto.Title,
-                Target = campaignDto.Target,
-                Description = campaignDto.Description,
-                Address = campaignDto.Address,
-                TargetAmount = campaignDto.TargetAmount,
-                Organiser = campaignDto.Organiser,
-                CreatedDate = DateTime.Now,
-                CreatedBy = null,
-                disabled = true,
-                UpdatedDate = null,
-                UpdatedBy = null,
-            };
+            _context = context;
+        }
+
+        public async Task<Campaign> Add(Campaign campaign)
+        {
             _context.Campaign.Add(campaign);
             await _context.SaveChangesAsync();
             return campaign;
@@ -43,7 +32,7 @@ namespace DonationAppDemo.DAL
             existingCampaign.Address = campaignDto.Address;
             existingCampaign.TargetAmount = campaignDto.TargetAmount;
             existingCampaign.UpdatedDate = DateTime.Now;
-            _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
             return existingCampaign;
         }
 
@@ -66,7 +55,7 @@ namespace DonationAppDemo.DAL
             return true;
         }
 
-        public async Task<bool> Finish(int campaignId)
+        public async Task<bool> ChangeStatus(int campaignId, int statusId)
         {
             var campaign = await _context.Campaign.Where(x => x.Id == campaignId).FirstOrDefaultAsync();
             if (campaign == null)
@@ -74,7 +63,7 @@ namespace DonationAppDemo.DAL
                 return false;
             }
             //set status campaign Id to value of "Finished"
-            campaign.StatusCampaign.Id = 1;
+            campaign.StatusCampaign.Id = statusId;
             await _context.SaveChangesAsync();
             return true;
         }

@@ -10,17 +10,32 @@ namespace DonationAppDemo.DAL
         private readonly IDonorDal _donorDal;
         private readonly IOrganiserDal _organiserDal;
 
+        private readonly ICampaignDal _campaignDal;
+        private readonly IImageCampaignDal _imageCampaignDal;
+        private readonly IRateCampaignDal _rateCampaignDal;
+
+
         public TransactionDal(DonationDbContext context,
+            //Account
             IAccountDal accountDal,
             IAdminDal adminDal,
             IDonorDal donorDal,
-            IOrganiserDal organiserDal)
+            IOrganiserDal organiserDal,
+            //Campaign
+            ICampaignDal campaignDal,
+            IImageCampaignDal imageCampaignDal,
+            IRateCampaignDal rateCampaignDal)
         {
             _context = context;
+            //Account
             _accountDal = accountDal;
             _adminDal = adminDal;
             _donorDal = donorDal;
             _organiserDal = organiserDal;
+            //Campaign
+            _campaignDal = campaignDal;
+            _imageCampaignDal = imageCampaignDal;
+            _rateCampaignDal = rateCampaignDal;
         }
 
         // Account + Organiser
@@ -76,7 +91,7 @@ namespace DonationAppDemo.DAL
                     transaction.Commit();
                     return true;
                 }
-                catch (Exception ex)
+                catch
                 {
                     transaction.Rollback();
                     return false;
@@ -97,11 +112,32 @@ namespace DonationAppDemo.DAL
                     transaction.Commit();
                     return true;
                 }
-                catch (Exception ex)
+                catch
                 {
                     transaction.Rollback();
                     return false;
                 }
+            }
+        }
+        //Delete Campaign
+        public async Task<bool> CampaignRateImage(CampaignDto campaignDto)
+        {
+            using(var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    await _campaignDal.Remove(campaignDto.Id);
+                    await _rateCampaignDal.RemoveByCampaignId(campaignDto.Id);
+                    await _imageCampaignDal.RemoveByCampaignId(campaignDto.Id);
+                    transaction.Commit();
+                    return true;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    return false;
+                }
+
             }
         }
     }

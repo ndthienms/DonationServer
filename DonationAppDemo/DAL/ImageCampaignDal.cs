@@ -13,19 +13,14 @@ namespace DonationAppDemo.DAL
             _context = context;
         }
 
-        public async Task<ImageCampaign> Add(ImageCampaignDto imageCampaign)
+        public async Task<List<ImageCampaign>> AddImages(List<ImageCampaign> imageCamapaigns)
         {
-            var newImage = new ImageCampaign()
+            foreach(var imageCampaign in imageCamapaigns)
             {
-                Id = imageCampaign.Id,
-                ImageSrc = imageCampaign.ImageSrc,
-                ImageSrcPublicId = imageCampaign.ImageSrcPublicId,
-                CampaignId = imageCampaign.CampaignId,
-                StatusCampaignId = imageCampaign.StatusCampaignId
-            };
-            _context.ImageCampaign.Add(newImage);
+                _context.Add(imageCampaign);
+            }
             await _context.SaveChangesAsync();
-            return newImage;
+            return imageCamapaigns;
         }
 
         public async Task<bool> Remove(int imageId)
@@ -36,6 +31,20 @@ namespace DonationAppDemo.DAL
                 return false;
             }
             _context.ImageCampaign.Remove(image);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        public async Task<bool> RemoveByCampaignId(int campaignId)
+        {
+            List<ImageCampaign> listImageCampaign = await _context.ImageCampaign.Where(x => x.CampaignId == campaignId).ToListAsync();
+            if (listImageCampaign == null)
+            {
+                return false;
+            }
+            foreach (var image in listImageCampaign)
+            {
+                _context.ImageCampaign.Remove(image);
+            }
             await _context.SaveChangesAsync();
             return true;
         }
@@ -53,6 +62,19 @@ namespace DonationAppDemo.DAL
                                     .Where(c => c.CampaignId == campaignId)
                                     .Skip((pageIndex - 1) * pageSize)
                                     .Take(pageSize)
+                                    .ToListAsync();
+        }
+        public async Task<List<ImageCampaign>> GetAllById(int campaignId)
+        {
+            var campaignExists = await _context.Campaign.AnyAsync(c => c.Id == campaignId);
+
+            if (!campaignExists)
+            {
+                return new List<ImageCampaign>();
+            }
+            // Fetch all image campaigns that match the given campaignId
+            return await _context.ImageCampaign
+                                    .Where(c => c.CampaignId == campaignId)
                                     .ToListAsync();
         }
     }

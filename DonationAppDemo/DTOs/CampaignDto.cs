@@ -11,6 +11,7 @@ namespace DonationAppDemo.DTOs
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public string? Address { get; set; }
+        public IFormFile? CoverImage { get; set; }
         public decimal? TargetAmount { get; set; }
         public int? OrganiserId { get; set; }
         public virtual StatusCampaign? StatusCampaign { get; set; }

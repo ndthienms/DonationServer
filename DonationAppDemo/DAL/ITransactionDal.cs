@@ -8,5 +8,6 @@ namespace DonationAppDemo.DAL
         Task<bool> UpdateAccountOrganiserApprovement(int organiserId, int adminId, string phoneNum);
         Task<bool> AccountDonor(AccountDto accountDto, DonorDto donorDto);
         Task<bool> AccountAdmin(AccountDto accountDto, AdminDto adminDto);
+        Task<bool> CampaignRateImage(CampaignDto campaignDto);
     }
 }
