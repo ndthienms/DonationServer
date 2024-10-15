@@ -1,7 +1,7 @@
 ﻿using CloudinaryDotNet.Actions;
 using DonationAppDemo.DTOs;
 
-namespace DonationAppDemo.Services
+namespace DonationAppDemo.Services.Interfaces
 {
     public interface IUtilitiesService
     {

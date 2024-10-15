@@ -1,7 +1,7 @@
 ﻿using DonationAppDemo.DTOs;
 using DonationAppDemo.Models;
 
-namespace DonationAppDemo.Services
+namespace DonationAppDemo.Services.Interfaces
 {
     public interface IOrganiserService
     {

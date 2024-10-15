@@ -1,5 +1,5 @@
 ﻿using DonationAppDemo.DTOs;
-using DonationAppDemo.Services;
+using DonationAppDemo.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

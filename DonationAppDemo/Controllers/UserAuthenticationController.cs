@@ -1,5 +1,5 @@
 ﻿using DonationAppDemo.DTOs;
-using DonationAppDemo.Services;
+using DonationAppDemo.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

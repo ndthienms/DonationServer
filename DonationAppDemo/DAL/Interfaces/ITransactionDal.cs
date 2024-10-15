@@ -1,6 +1,6 @@
 ﻿using DonationAppDemo.DTOs;
 
-namespace DonationAppDemo.DAL
+namespace DonationAppDemo.DAL.Interfaces
 {
     public interface ITransactionDal
     {

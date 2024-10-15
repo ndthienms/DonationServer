@@ -1,4 +1,5 @@
-﻿using DonationAppDemo.DTOs;
+﻿using DonationAppDemo.DAL.Interfaces;
+using DonationAppDemo.DTOs;
 
 namespace DonationAppDemo.DAL
 {

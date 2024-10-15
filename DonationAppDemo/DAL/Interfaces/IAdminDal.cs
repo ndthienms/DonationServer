@@ -1,7 +1,7 @@
 ﻿using DonationAppDemo.DTOs;
 using DonationAppDemo.Models;
 
-namespace DonationAppDemo.DAL
+namespace DonationAppDemo.DAL.Interfaces
 {
     public interface IAdminDal
     {
