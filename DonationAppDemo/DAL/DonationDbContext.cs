@@ -13,6 +13,7 @@ namespace DonationAppDemo.DAL
         public virtual DbSet<Campaign> Campaign { get; set; } = null!;
         public virtual DbSet<CommentPost> CommentPost { get; set; } = null!;
         public virtual DbSet<Donation> Donation { get; set; } = null!;
+        public virtual DbSet<Transference> Transference { get; set; } = null!;
         public virtual DbSet<PaymentMethod> PaymentMethod { get; set; } = null!;
         public virtual DbSet<Donor> Donor { get; set; } = null!;
         public virtual DbSet<ImageCampaign> ImageCampaign { get; set; } = null!;
