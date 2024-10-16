@@ -1,7 +1,9 @@
 ﻿using CloudinaryDotNet;
+using DonationAppDemo.Helper;
 using DonationAppDemo.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using System.Data.SqlTypes;
 
 namespace DonationAppDemo.DAL
 {
@@ -37,7 +39,7 @@ namespace DonationAppDemo.DAL
                 x.DonorId
             });
 
-            // Seeding admin data
+            // Seed data
         }
     }
 }

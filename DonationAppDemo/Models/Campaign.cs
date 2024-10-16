@@ -20,7 +20,7 @@
         public int? CreatedBy { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public int? UpdatedBy { get; set; }
-        public bool? disabled { get; set; }
+        public bool? Disabled { get; set; }
         public virtual StatusCampaign? StatusCampaign { get; set; }
         public virtual Organiser? Organiser { get; set; }
         public ICollection<ImageCampaign>? ImageCampaigns { get; set; }

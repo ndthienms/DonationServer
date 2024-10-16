@@ -55,7 +55,7 @@ namespace DonationAppDemo.Services
                 CoverSrcPublicId = coverSrcPublicId,
                 CreatedDate = DateTime.Now,
                 CreatedBy = null,
-                disabled = true,
+                Disabled = true,
                 UpdatedDate = null,
                 UpdatedBy = null,
             };
@@ -83,7 +83,7 @@ namespace DonationAppDemo.Services
             RateCampaign rateCampaign = new RateCampaign()
             {
                 CampaignId = rateCampaignDto.CampaignId,
-                Content = rateCampaignDto.Content,
+                Comment = rateCampaignDto.Content,
                 Rate = rateCampaignDto.Rate,
                 RatedDate = DateTime.Now,
                 DonorId = rateCampaignDto.DonorId,

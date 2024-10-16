@@ -147,7 +147,7 @@ namespace DonationAppDemo.Services
             {
                 throw new Exception("Account does not exist");
             }
-            if (user.disabled == true)
+            if (user.Disabled == true)
             {
                 throw new Exception("Account has been locked or not approved");
             }

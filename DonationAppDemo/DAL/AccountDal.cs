@@ -16,7 +16,7 @@ namespace DonationAppDemo.DAL
         }
         public async Task<Account?> Get(string phoneNum)
         {
-            var user = await _context.Account.Where(x => x.PhoneNum == phoneNum && x.disabled == false).FirstOrDefaultAsync();
+            var user = await _context.Account.Where(x => x.PhoneNum == phoneNum && x.Disabled == false).FirstOrDefaultAsync();
             return user;
         }
         public async Task<Account> Add(AccountDto accountDto)
@@ -31,7 +31,7 @@ namespace DonationAppDemo.DAL
                 CreatedBy = null,
                 UpdatedDate = DateTime.Now,
                 UpdatedBy = null,
-                disabled = accountDto.Disabled
+                Disabled = accountDto.Disabled
 
             };
             _context.Account.Add(account);
@@ -46,7 +46,7 @@ namespace DonationAppDemo.DAL
                 throw new Exception($"Not found user's phone number {phoneNum}");
             }
 
-            account.disabled = disabled;
+            account.Disabled = disabled;
 
             _context.Account.Update(account);
             await _context.SaveChangesAsync();

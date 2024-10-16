@@ -13,7 +13,7 @@ namespace DonationAppDemo.Models
         public int? CreatedBy { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public int? UpdatedBy { get; set;}
-        public bool? disabled { get; set; } //if account signed up organiser role -> disabled == true (waiting for acceptance)
+        public bool? Disabled { get; set; } //if account signed up organiser role -> disabled == true (waiting for acceptance)
         public ICollection<Admin>? Admins { get; set; }
         public ICollection<Organiser>? Organisers { get; set; }
         public ICollection<Donor>? Donors { get; set; }
