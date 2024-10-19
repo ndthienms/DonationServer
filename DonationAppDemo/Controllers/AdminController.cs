@@ -1,4 +1,5 @@
 ﻿using DonationAppDemo.DTOs;
+using DonationAppDemo.Services;
 using DonationAppDemo.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -19,13 +20,13 @@ namespace DonationAppDemo.Controllers
         }
 
         [HttpGet]
-        [Route("GetAll")]
+        [Route("GetAll/{pageIndex}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromRoute]int pageIndex)
         {
             try
             {
-                var result = await _adminService.GetAll();
+                var result = await _adminService.GetAll(pageIndex);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -34,7 +35,22 @@ namespace DonationAppDemo.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpPut]
+        [Route("GetSearchedList/{pageIndex}")]
+        public async Task<IActionResult> GetSearchedList([FromRoute] int pageIndex, [FromBody] string text)
+        {
+            try
+            {
+                var result = await _adminService.GetSearchedList(pageIndex, text);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /*[HttpGet]
         [Route("GetById/{adminId}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]
         public async Task<IActionResult> GetById([FromRoute] int adminId)
@@ -48,7 +64,7 @@ namespace DonationAppDemo.Controllers
             {
                 return BadRequest(ex.Message);
             }
-        }
+        }*/
 
         [HttpPut]
         [Route("Update/{adminId}")]

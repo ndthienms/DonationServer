@@ -52,6 +52,32 @@ namespace DonationAppDemo.DAL
             await _context.SaveChangesAsync();
             return true;
         }
+        public async Task<bool> UpdateRole(string phoneNum, string role, bool disabled)
+        {
+            var account = await _context.Account.Where(x => x.PhoneNum == phoneNum).FirstOrDefaultAsync();
+            if (account == null)
+            {
+                throw new Exception($"Not found user's phone number {phoneNum}");
+            }
+            else
+            {
+                if (account.Role.Contains(role))
+                {
+                    throw new Exception($"Role existed");
+                }
+            }
+
+            account.Role = "," + account.Role + role;
+
+            if (!account.Role.Contains("admin"))
+            {
+                account.Disabled = disabled;
+            }
+            
+            _context.Account.Update(account);
+            await _context.SaveChangesAsync();
+            return true;
+        }
         public async Task<bool> Delete(string phoneNum)
         {
             var account = await _context.Account.Where(x => x.PhoneNum == phoneNum).FirstOrDefaultAsync();
@@ -61,6 +87,32 @@ namespace DonationAppDemo.DAL
             }
             _context.Account.Remove(account);
             await _context.SaveChangesAsync();
+            return true;
+        }
+        public async Task<bool> DeleteUncensoredOrganiser(string phoneNum)
+        {
+            var account = await _context.Account.Where(x => x.PhoneNum == phoneNum).FirstOrDefaultAsync();
+            if (account == null)
+            {
+                throw new Exception($"Not found user's phone number {phoneNum}");
+            }
+
+            // Check role
+            var roles = account.Role.Split(",").ToList();
+            for(int i=0; i < roles.Count; i++)
+            {
+                if (roles[i].Equals("organiser"))
+                {
+                    roles.RemoveAt(i);
+                    break;
+                }
+            }
+            if(roles.Count == 0)
+            {
+                _context.Account.Remove(account);
+                await _context.SaveChangesAsync();
+            }
+
             return true;
         }
     }

@@ -143,5 +143,21 @@ namespace DonationAppDemo.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpDelete]
+        [Route("DeleteUncensorOrganiserAccount/{phoneNum}/{organiserId}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]
+        public async Task<IActionResult> DeleteUncensorOrganiserAccount([FromRoute] string phoneNum, [FromRoute] int organiserId)
+        {
+            try
+            {
+                var result = await _accountService.DeleteUncensorOrganiserAccount(phoneNum, organiserId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

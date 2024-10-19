@@ -79,21 +79,5 @@ namespace DonationAppDemo.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
-        [HttpPut]
-        [Route("UpdateApprovementOrganiser/{phoneNum}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]
-        public async Task<IActionResult> UpdateApprovementOrganiser([FromRoute]string phoneNum, [FromBody]int organiserId)
-        {
-            try
-            {
-                var result = await _userAuthenticationService.UpdateApprovementOrganiser(phoneNum, organiserId);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
     }
 }

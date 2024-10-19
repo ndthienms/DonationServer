@@ -13,9 +13,30 @@ namespace DonationAppDemo.DAL
         {
             _context = context;
         }
-        public async Task<List<Organiser>> GetAll()
+        public async Task<List<Organiser>> GetAll(int pageIndex)
         {
-            var usersInformation = await _context.Organiser.ToListAsync();
+            var usersInformation = await _context.Organiser
+                .Skip((pageIndex - 1) * 20)
+                .Take(20)
+                .ToListAsync();
+            return usersInformation;
+        }
+        public async Task<List<Organiser>> GetSearchedList(int pageIndex, string text)
+        {
+            var usersInformation = await _context.Organiser
+                .Where(x => x.AccountId == text || x.Id.ToString() == text || x.Name == text)
+                .Skip((pageIndex - 1) * 20)
+                .Take(20)
+                .ToListAsync();
+            return usersInformation;
+        }
+        public async Task<List<Organiser>> GetAllUnCensored(int pageIndex)
+        {
+            var usersInformation = await _context.Organiser
+                .Where(x => x.AcceptedBy == null)
+                .Skip((pageIndex - 1) * 20)
+                .Take(20)
+                .ToListAsync();
             return usersInformation;
         }
         public async Task<Organiser?> GetById(int id)
@@ -44,6 +65,8 @@ namespace DonationAppDemo.DAL
                 CreatedBy = null,
                 UpdatedDate = DateTime.Now,
                 UpdatedBy = null,
+                AcceptedBy = null,
+                AcceptedDate = null,
                 AccountId = organiserDto.PhoneNum,
             };
             _context.Organiser.Add(organiser);
@@ -123,6 +146,18 @@ namespace DonationAppDemo.DAL
             _context.Organiser.Update(organiser);
             await _context.SaveChangesAsync();
             return organiser;
+        }
+
+        public async Task<bool> Delete(int organiserId)
+        {
+            var organiser = await _context.Organiser.Where(x => x.Id == organiserId).FirstOrDefaultAsync();
+            if (organiser == null)
+            {
+                throw new Exception($"Not found user id {organiserId}");
+            }
+            _context.Organiser.Remove(organiser);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

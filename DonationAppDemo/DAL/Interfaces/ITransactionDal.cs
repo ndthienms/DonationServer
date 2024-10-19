@@ -4,9 +4,11 @@ namespace DonationAppDemo.DAL.Interfaces
 {
     public interface ITransactionDal
     {
-        Task<bool> AccountOrganiser(AccountDto accountDto, OrganiserDto organiserDto, string? certificationPublicId);
-        Task<bool> UpdateAccountOrganiserApprovement(int organiserId, int adminId, string phoneNum);
-        Task<bool> AccountDonor(AccountDto accountDto, DonorDto donorDto);
+        Task<bool> SignUpOrganiser(AccountDto accountDto, OrganiserDto organiserDto, string? certificationPublicId);
+        Task<bool> BecomeOrganiser(string phoneNum, string role, bool disabled, OrganiserDto organiserDto, string? certificationPublicId);
+        Task<bool> DeleteUncensoredOrganiser(string phoneNum, int organiserId);
+        Task<bool> SignUpDonor(AccountDto accountDto, DonorDto donorDto);
+        Task<bool> BecomeDonor(string phoneNum, string role, bool disabled, DonorDto donorDto);
         Task<bool> AccountAdmin(AccountDto accountDto, AdminDto adminDto);
         Task<bool> CampaignRateImage(CampaignDto campaignDto);
     }
