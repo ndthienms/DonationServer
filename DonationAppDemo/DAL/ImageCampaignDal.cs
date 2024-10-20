@@ -1,6 +1,7 @@
 ﻿using DonationAppDemo.DTOs;
 using DonationAppDemo.Models;
 using Microsoft.EntityFrameworkCore;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace DonationAppDemo.DAL
 {
@@ -48,30 +49,36 @@ namespace DonationAppDemo.DAL
             await _context.SaveChangesAsync();
             return true;
         }
-
-        public async Task<List<ImageCampaign>> GetById(int campaignId, int pageSize, int pageIndex)
+        public async Task<bool> RemoveListImages(List<ImageCampaignDto> imageCampaignDtos)
         {
-            var campaignExists = await _context.Campaign.AnyAsync(c => c.Id == campaignId);
-
-            if (!campaignExists)
+            if (imageCampaignDtos == null)
             {
-                return new List<ImageCampaign>();
+                return false;
             }
+            foreach(var imageDto in imageCampaignDtos)
+            {
+                var image = await _context.ImageCampaign.Where(x => x.Id == imageDto.Id).FirstOrDefaultAsync();
+                if(image == null)
+                {
+                    return false;
+                }
+                _context.ImageCampaign.Remove(image);
+            }
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<List<ImageCampaign>> GetById(int campaignId, int pageIndex)
+        {
             // Fetch all image campaigns that match the given campaignId
             return await _context.ImageCampaign
                                     .Where(c => c.CampaignId == campaignId)
-                                    .Skip((pageIndex - 1) * pageSize)
-                                    .Take(pageSize)
+                                    .Skip((pageIndex - 1) * 10)
+                                    .Take(10)
                                     .ToListAsync();
         }
         public async Task<List<ImageCampaign>> GetAllById(int campaignId)
         {
-            var campaignExists = await _context.Campaign.AnyAsync(c => c.Id == campaignId);
-
-            if (!campaignExists)
-            {
-                return new List<ImageCampaign>();
-            }
             // Fetch all image campaigns that match the given campaignId
             return await _context.ImageCampaign
                                     .Where(c => c.CampaignId == campaignId)
