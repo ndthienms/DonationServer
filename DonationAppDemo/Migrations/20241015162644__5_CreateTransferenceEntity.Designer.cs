@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DonationAppDemo.Migrations
 {
     [DbContext(typeof(DonationDbContext))]
-    [Migration("20241006072002_dbinit")]
-    partial class dbinit
+    [Migration("20241015162644__5_CreateTransferenceEntity")]
+    partial class _5_CreateTransferenceEntity
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -114,6 +114,12 @@ namespace DonationAppDemo.Migrations
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("CoverSrc")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CoverSrcPublicId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("CreatedBy")
                         .HasColumnType("int");
 
@@ -208,11 +214,31 @@ namespace DonationAppDemo.Migrations
                     b.Property<int?>("DonorId")
                         .HasColumnType("int");
 
+                    b.Property<string>("PaymentDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PaymentMethodId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PaymentOrderId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentResponse")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentTransactionId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CampaignId");
 
                     b.HasIndex("DonorId");
+
+                    b.HasIndex("PaymentMethodId");
 
                     b.ToTable("Donation");
                 });
@@ -266,6 +292,38 @@ namespace DonationAppDemo.Migrations
                     b.HasIndex("AccountId");
 
                     b.ToTable("Donor");
+                });
+
+            modelBuilder.Entity("DonationAppDemo.Models.Expense", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<decimal?>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("CampaignId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ExpenseDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("OrganiserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CampaignId");
+
+                    b.HasIndex("OrganiserId");
+
+                    b.ToTable("Expense");
                 });
 
             modelBuilder.Entity("DonationAppDemo.Models.ImageCampaign", b =>
@@ -441,7 +499,7 @@ namespace DonationAppDemo.Migrations
                     b.ToTable("Organiser");
                 });
 
-            modelBuilder.Entity("DonationAppDemo.Models.Payment", b =>
+            modelBuilder.Entity("DonationAppDemo.Models.PaymentMethod", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -449,28 +507,12 @@ namespace DonationAppDemo.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<decimal?>("Amount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int?>("CampaignId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
+                    b.Property<string>("method")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("OrganiserId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("PaymentDate")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CampaignId");
-
-                    b.HasIndex("OrganiserId");
-
-                    b.ToTable("Payment");
+                    b.ToTable("PaymentMethod");
                 });
 
             modelBuilder.Entity("DonationAppDemo.Models.Post", b =>
@@ -540,6 +582,38 @@ namespace DonationAppDemo.Migrations
                     b.ToTable("StatusCampaign");
                 });
 
+            modelBuilder.Entity("DonationAppDemo.Models.Transference", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int?>("AdminId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("CampaignId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("TransDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AdminId");
+
+                    b.HasIndex("CampaignId");
+
+                    b.ToTable("Transference");
+                });
+
             modelBuilder.Entity("DonationAppDemo.Models.Admin", b =>
                 {
                     b.HasOne("DonationAppDemo.Models.Account", "Account")
@@ -589,9 +663,15 @@ namespace DonationAppDemo.Migrations
                         .WithMany("Donations")
                         .HasForeignKey("DonorId");
 
+                    b.HasOne("DonationAppDemo.Models.PaymentMethod", "PaymentMethod")
+                        .WithMany()
+                        .HasForeignKey("PaymentMethodId");
+
                     b.Navigation("Campaign");
 
                     b.Navigation("Donor");
+
+                    b.Navigation("PaymentMethod");
                 });
 
             modelBuilder.Entity("DonationAppDemo.Models.Donor", b =>
@@ -601,6 +681,21 @@ namespace DonationAppDemo.Migrations
                         .HasForeignKey("AccountId");
 
                     b.Navigation("Account");
+                });
+
+            modelBuilder.Entity("DonationAppDemo.Models.Expense", b =>
+                {
+                    b.HasOne("DonationAppDemo.Models.Campaign", "Campaign")
+                        .WithMany("Expenses")
+                        .HasForeignKey("CampaignId");
+
+                    b.HasOne("DonationAppDemo.Models.Organiser", "Organiser")
+                        .WithMany("Expenses")
+                        .HasForeignKey("OrganiserId");
+
+                    b.Navigation("Campaign");
+
+                    b.Navigation("Organiser");
                 });
 
             modelBuilder.Entity("DonationAppDemo.Models.ImageCampaign", b =>
@@ -654,21 +749,6 @@ namespace DonationAppDemo.Migrations
                     b.Navigation("Account");
                 });
 
-            modelBuilder.Entity("DonationAppDemo.Models.Payment", b =>
-                {
-                    b.HasOne("DonationAppDemo.Models.Campaign", "Campaign")
-                        .WithMany("Payments")
-                        .HasForeignKey("CampaignId");
-
-                    b.HasOne("DonationAppDemo.Models.Organiser", "Organiser")
-                        .WithMany("Payments")
-                        .HasForeignKey("OrganiserId");
-
-                    b.Navigation("Campaign");
-
-                    b.Navigation("Organiser");
-                });
-
             modelBuilder.Entity("DonationAppDemo.Models.Post", b =>
                 {
                     b.HasOne("DonationAppDemo.Models.Account", "Account")
@@ -697,6 +777,21 @@ namespace DonationAppDemo.Migrations
                     b.Navigation("Donor");
                 });
 
+            modelBuilder.Entity("DonationAppDemo.Models.Transference", b =>
+                {
+                    b.HasOne("DonationAppDemo.Models.Admin", "Admin")
+                        .WithMany()
+                        .HasForeignKey("AdminId");
+
+                    b.HasOne("DonationAppDemo.Models.Campaign", "Campaign")
+                        .WithMany()
+                        .HasForeignKey("CampaignId");
+
+                    b.Navigation("Admin");
+
+                    b.Navigation("Campaign");
+                });
+
             modelBuilder.Entity("DonationAppDemo.Models.Account", b =>
                 {
                     b.Navigation("Admins");
@@ -716,9 +811,9 @@ namespace DonationAppDemo.Migrations
                 {
                     b.Navigation("Donations");
 
-                    b.Navigation("ImageCampaigns");
+                    b.Navigation("Expenses");
 
-                    b.Navigation("Payments");
+                    b.Navigation("ImageCampaigns");
 
                     b.Navigation("RateCampaigns");
                 });
@@ -739,7 +834,7 @@ namespace DonationAppDemo.Migrations
                 {
                     b.Navigation("Campaigns");
 
-                    b.Navigation("Payments");
+                    b.Navigation("Expenses");
                 });
 
             modelBuilder.Entity("DonationAppDemo.Models.Post", b =>

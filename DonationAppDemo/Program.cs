@@ -7,6 +7,8 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Text.Json;
 using DonationAppDemo.Services;
+using DonationAppDemo.DAL.Interfaces;
+using DonationAppDemo.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 

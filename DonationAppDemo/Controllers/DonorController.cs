@@ -1,5 +1,8 @@
 ﻿using DonationAppDemo.DTOs;
 using DonationAppDemo.Services;
+using DonationAppDemo.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,12 +20,27 @@ namespace DonationAppDemo.Controllers
         }
 
         [HttpGet]
-        [Route("GetAll")]
-        public async Task<IActionResult> GetAll()
+        [Route("GetAll/{pageIndex}")]
+        public async Task<IActionResult> GetAll([FromRoute]int pageIndex)
         {
             try
             {
-                var result = await _donorService.GetAll();
+                var result = await _donorService.GetAll(pageIndex);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("GetSearchedList/{pageIndex}")]
+        public async Task<IActionResult> GetSearchedList([FromRoute] int pageIndex, [FromBody] string text)
+        {
+            try
+            {
+                var result = await _donorService.GetSearchedList(pageIndex, text);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -68,6 +86,21 @@ namespace DonationAppDemo.Controllers
             try
             {
                 var result = await _donorService.UpdateAva(donorId, avaFile);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPost]
+        [Route("BecomeDonor")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin,organiser")]
+        public async Task<IActionResult> BecomeDonor([FromBody] SignUpDonorDto signUpDonorDto)
+        {
+            try
+            {
+                var result = await _donorService.BecomeDonor(signUpDonorDto);
                 return Ok(result);
             }
             catch (Exception ex)

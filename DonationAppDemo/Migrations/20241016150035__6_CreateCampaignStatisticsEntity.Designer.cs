@@ -4,6 +4,7 @@ using DonationAppDemo.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DonationAppDemo.Migrations
 {
     [DbContext(typeof(DonationDbContext))]
-    partial class DonationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241016150035__6_CreateCampaignStatisticsEntity")]
+    partial class _6_CreateCampaignStatisticsEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,9 +35,6 @@ namespace DonationAppDemo.Migrations
                     b.Property<DateTime?>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool?>("Disabled")
-                        .HasColumnType("bit");
-
                     b.Property<byte[]>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
@@ -53,6 +52,9 @@ namespace DonationAppDemo.Migrations
 
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool?>("disabled")
+                        .HasColumnType("bit");
 
                     b.HasKey("PhoneNum");
 
@@ -127,9 +129,6 @@ namespace DonationAppDemo.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("Disabled")
-                        .HasColumnType("bit");
-
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
@@ -156,6 +155,9 @@ namespace DonationAppDemo.Migrations
 
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool?>("disabled")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -524,7 +526,7 @@ namespace DonationAppDemo.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<string>("Method")
+                    b.Property<string>("method")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -546,11 +548,11 @@ namespace DonationAppDemo.Migrations
                     b.Property<string>("Content")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("Disabled")
-                        .HasColumnType("bit");
-
                     b.Property<DateTime?>("PostDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool?>("disabled")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -567,7 +569,7 @@ namespace DonationAppDemo.Migrations
                     b.Property<int>("DonorId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Comment")
+                    b.Property<string>("Content")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("Rate")

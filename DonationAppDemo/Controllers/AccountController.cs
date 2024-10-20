@@ -1,6 +1,6 @@
 ﻿using DonationAppDemo.DTOs;
 using DonationAppDemo.Models;
-using DonationAppDemo.Services;
+using DonationAppDemo.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -136,6 +136,22 @@ namespace DonationAppDemo.Controllers
             try
             {
                 var result = await _accountService.AddAdminAccount(signUpAdminDto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete]
+        [Route("DeleteUncensorOrganiserAccount/{phoneNum}/{organiserId}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]
+        public async Task<IActionResult> DeleteUncensorOrganiserAccount([FromRoute] string phoneNum, [FromRoute] int organiserId)
+        {
+            try
+            {
+                var result = await _accountService.DeleteUncensorOrganiserAccount(phoneNum, organiserId);
                 return Ok(result);
             }
             catch (Exception ex)

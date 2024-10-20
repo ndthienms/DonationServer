@@ -1,4 +1,5 @@
-﻿using DonationAppDemo.DTOs;
+﻿using DonationAppDemo.DAL.Interfaces;
+using DonationAppDemo.DTOs;
 using DonationAppDemo.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,9 +13,21 @@ namespace DonationAppDemo.DAL
         {
             _context = context;
         }
-        public async Task<List<Donor>> GetAll()
+        public async Task<List<Donor>> GetAll(int pageIndex)
         {
-            var usersInformation = await _context.Donor.ToListAsync();
+            var usersInformation = await _context.Donor
+                .Skip((pageIndex - 1) * 20)
+                .Take(20)
+                .ToListAsync();
+            return usersInformation;
+        }
+        public async Task<List<Donor>> GetSearchedList(int pageIndex, string text)
+        {
+            var usersInformation = await _context.Donor
+                .Where(x => x.AccountId == text || x.Id.ToString() == text || x.Name == text)
+                .Skip((pageIndex - 1) * 20)
+                .Take(20)
+                .ToListAsync();
             return usersInformation;
         }
         public async Task<Donor?> GetById(int id)

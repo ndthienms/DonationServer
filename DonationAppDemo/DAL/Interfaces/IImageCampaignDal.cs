@@ -1,7 +1,7 @@
 ﻿using DonationAppDemo.Models;
 using DonationAppDemo.DTOs;
 
-namespace DonationAppDemo.DAL
+namespace DonationAppDemo.DAL.Interfaces
 {
     public interface IImageCampaignDal
     {

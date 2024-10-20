@@ -1,5 +1,5 @@
 ﻿using DonationAppDemo.DTOs;
-using DonationAppDemo.Services;
+using DonationAppDemo.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -72,22 +72,6 @@ namespace DonationAppDemo.Controllers
             try
             {
                 var result = await _userAuthenticationService.SignIn(signInDto);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpPut]
-        [Route("UpdateApprovementOrganiser/{phoneNum}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]
-        public async Task<IActionResult> UpdateApprovementOrganiser([FromRoute]string phoneNum, [FromBody]int organiserId)
-        {
-            try
-            {
-                var result = await _userAuthenticationService.UpdateApprovementOrganiser(phoneNum, organiserId);
                 return Ok(result);
             }
             catch (Exception ex)

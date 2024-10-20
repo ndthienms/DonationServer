@@ -1,11 +1,13 @@
 ﻿using DonationAppDemo.DTOs;
 using DonationAppDemo.Models;
 
-namespace DonationAppDemo.DAL
+namespace DonationAppDemo.DAL.Interfaces
 {
     public interface IOrganiserDal
     {
-        Task<List<Organiser>> GetAll();
+        Task<List<Organiser>> GetAll(int pageIndex);
+        Task<List<Organiser>> GetSearchedList(int pageIndex, string text);
+        Task<List<Organiser>> GetAllUnCensored(int pageIndex);
         Task<Organiser?> GetById(int id);
         Task<Organiser?> GetByPhoneNum(string phoneNum);
         Task<Organiser> Add(OrganiserDto organiserDto, string? certificationPublicId);
@@ -13,5 +15,6 @@ namespace DonationAppDemo.DAL
         Task<Organiser> UpdateApprovement(int organiserId, int adminId);
         Task<Organiser> UpdateAva(int organiserId, string avaSrc, string avaSrcPublicId);
         Task<Organiser> UpdateCertification(int organiserId, string certificationSrc, string certificationSrcPublicId);
+        Task<bool> Delete(int organiserId);
     }
 }

@@ -1,6 +1,7 @@
-﻿using DonationAppDemo.DAL;
+﻿using DonationAppDemo.DAL.Interfaces;
 using DonationAppDemo.DTOs;
 using DonationAppDemo.Models;
+using DonationAppDemo.Services.Interfaces;
 
 namespace DonationAppDemo.Services
 {
@@ -111,7 +112,7 @@ namespace DonationAppDemo.Services
             RateCampaign rateCampaign = new RateCampaign()
             {
                 CampaignId = rateCampaignDto.CampaignId,
-                Content = rateCampaignDto.Content,
+                Comment = rateCampaignDto.Content,
                 Rate = rateCampaignDto.Rate,
                 RatedDate = DateTime.Now,
                 DonorId = rateCampaignDto.DonorId,

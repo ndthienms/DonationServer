@@ -1,6 +1,7 @@
-﻿using DonationAppDemo.DAL;
+﻿using DonationAppDemo.DAL.Interfaces;
 using DonationAppDemo.DTOs;
 using DonationAppDemo.Models;
+using DonationAppDemo.Services.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
@@ -129,7 +130,7 @@ namespace DonationAppDemo.Services
             };
 
             // Add to account and organiser table in db
-            var transactionResult = await _transactionDal.AccountOrganiser(accountDto, organiserDto, uploadImageResult.PublicId);
+            var transactionResult = await _transactionDal.SignUpOrganiser(accountDto, organiserDto, uploadImageResult.PublicId);
             if (transactionResult == false)
             {
                 await _utilitiesService.CloudinaryDeletePhotoAsync(uploadImageResult.PublicId);
@@ -172,7 +173,7 @@ namespace DonationAppDemo.Services
             };
 
             // Add to account and organiser table in db
-            var transactionResult = await _transactionDal.AccountDonor(accountDto, donorDto);
+            var transactionResult = await _transactionDal.SignUpDonor(accountDto, donorDto);
             if (transactionResult == false)
             {
                 throw new Exception("Sign up failed");
@@ -218,6 +219,17 @@ namespace DonationAppDemo.Services
                 throw new Exception("Sign up failed");
             }
             return adminDto;
+        }
+
+        public async Task<bool> DeleteUncensorOrganiserAccount(string phoneNum, int organiserId)
+        {
+            // Delete account (only have organiser role) and organiser from db
+            var transactionResult = await _transactionDal.DeleteUncensoredOrganiser(phoneNum, organiserId);
+            if (transactionResult == false)
+            {
+                throw new Exception("Sign up failed");
+            }
+            return true;
         }
     }
 }

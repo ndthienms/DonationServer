@@ -1,4 +1,5 @@
-﻿using DonationAppDemo.DTOs;
+﻿using DonationAppDemo.DAL.Interfaces;
+using DonationAppDemo.DTOs;
 
 namespace DonationAppDemo.DAL
 {
@@ -39,7 +40,7 @@ namespace DonationAppDemo.DAL
         }
 
         // Account + Organiser
-        public async Task<bool> AccountOrganiser(AccountDto accountDto, OrganiserDto organiserDto, string? certificationPublicId)
+        public async Task<bool> SignUpOrganiser(AccountDto accountDto, OrganiserDto organiserDto, string? certificationPublicId)
         {
             using(var transaction = _context.Database.BeginTransaction())
             {
@@ -58,14 +59,33 @@ namespace DonationAppDemo.DAL
                 }
             }
         }
-        public async Task<bool> UpdateAccountOrganiserApprovement(int organiserId, int adminId, string phoneNum)
+        public async Task<bool> BecomeOrganiser(string phoneNum, string role, bool disabled, OrganiserDto organiserDto, string? certificationPublicId)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
-                    await _accountDal.UpdateDisabledAccount(phoneNum, false);
-                    await _organiserDal.UpdateApprovement(organiserId, adminId);
+                    await _accountDal.UpdateRole(phoneNum, role, disabled);
+                    await _organiserDal.Add(organiserDto, certificationPublicId);
+
+                    transaction.Commit();
+                    return true;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    return false;
+                }
+            }
+        }
+        public async Task<bool> DeleteUncensoredOrganiser(string phoneNum, int organiserId)
+        {
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    await _accountDal.DeleteUncensoredOrganiser(phoneNum);
+                    await _organiserDal.Delete(organiserId);
 
                     transaction.Commit();
                     return true;
@@ -79,13 +99,32 @@ namespace DonationAppDemo.DAL
         }
 
         // Account + Donor
-        public async Task<bool> AccountDonor(AccountDto accountDto, DonorDto donorDto)
+        public async Task<bool> SignUpDonor(AccountDto accountDto, DonorDto donorDto)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
                     await _accountDal.Add(accountDto);
+                    await _donorDal.Add(donorDto);
+
+                    transaction.Commit();
+                    return true;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    return false;
+                }
+            }
+        }
+        public async Task<bool> BecomeDonor(string phoneNum, string role, bool disabled, DonorDto donorDto)
+        {
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    await _accountDal.UpdateRole(phoneNum, role, disabled);
                     await _donorDal.Add(donorDto);
 
                     transaction.Commit();
@@ -119,6 +158,7 @@ namespace DonationAppDemo.DAL
                 }
             }
         }
+
         //Delete Campaign
         public async Task<bool> CampaignRateImage(CampaignDto campaignDto)
         {

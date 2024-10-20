@@ -1,10 +1,13 @@
-﻿using DonationAppDemo.DAL;
+﻿using CloudinaryDotNet.Actions;
+using DonationAppDemo.DAL.Interfaces;
 using DonationAppDemo.DTOs;
 using DonationAppDemo.Models;
+using DonationAppDemo.Services.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Twilio.Rest.Chat.V1.Service;
 
 namespace DonationAppDemo.Services
 {
@@ -13,6 +16,7 @@ namespace DonationAppDemo.Services
         private readonly IAccountDal _accountDal;
         private readonly IOrganiserDal _organiserDal;
         private readonly IDonorDal _donorDal;
+        private readonly IAdminDal _adminDal;
         private readonly ITransactionDal _transactionDal;
         private readonly IUtilitiesService _utilitiesService;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -21,6 +25,7 @@ namespace DonationAppDemo.Services
         public UserAuthenticationService(IAccountDal accountDal,
             IOrganiserDal organiserDal,
             IDonorDal donorDal,
+            IAdminDal adminDal,
             ITransactionDal transactionDal,
             IUtilitiesService utilitiesService,
             IHttpContextAccessor httpContextAccessor,
@@ -29,6 +34,7 @@ namespace DonationAppDemo.Services
             _accountDal = accountDal;
             _organiserDal = organiserDal;
             _donorDal = donorDal;
+            _adminDal = adminDal;
             _transactionDal = transactionDal;
             _utilitiesService = utilitiesService;
             _httpContextAccessor = httpContextAccessor;
@@ -85,11 +91,11 @@ namespace DonationAppDemo.Services
                 PasswordHash = hashSaltResult.hashedCode,
                 PasswordSalt = hashSaltResult.keyCode,
                 Role = "organiser",
-                Disabled = true
+                Disabled = false
             };
 
             // Add to account and organiser table in db
-            var transactionResult = await _transactionDal.AccountOrganiser(accountDto, organiserDto, uploadImageResult.PublicId);
+            var transactionResult = await _transactionDal.SignUpOrganiser(accountDto, organiserDto, uploadImageResult.PublicId);
             if (transactionResult == false)
             {
                 await _utilitiesService.CloudinaryDeletePhotoAsync(uploadImageResult.PublicId);
@@ -131,7 +137,7 @@ namespace DonationAppDemo.Services
             };
 
             // Add to account and organiser table in db
-            var transactionResult = await _transactionDal.AccountDonor(accountDto, donorDto);
+            var transactionResult = await _transactionDal.SignUpDonor(accountDto, donorDto);
             if (transactionResult == false)
             {
                 throw new Exception("Sign up failed");
@@ -146,7 +152,11 @@ namespace DonationAppDemo.Services
             {
                 throw new Exception("Account does not exist");
             }
-            if (user.disabled == true)
+            if (!user.Role.Contains(signInDto.Role))
+            {
+                throw new Exception("Account does not exist");
+            }
+            if (user.Disabled == true)
             {
                 throw new Exception("Account has been locked or not approved");
             }
@@ -157,9 +167,20 @@ namespace DonationAppDemo.Services
 
             // Get information of user and create claims
             var authClaims = new List<Claim>();
-            if (user.Role == "organiser")
+            if (signInDto.Role == "organiser")
             {
                 var userInformation = await _organiserDal.GetByPhoneNum(user.PhoneNum);
+
+                // Check approved organiser account
+                if(userInformation == null)
+                {
+                    throw new Exception("Account is not existed");
+                }
+
+                if(userInformation.AcceptedBy == null)
+                {
+                    throw new Exception("Your account have not been approved yet");
+                }
 
                 // Create claims
                 authClaims = new List<Claim>
@@ -167,12 +188,12 @@ namespace DonationAppDemo.Services
                     new Claim(ClaimTypes.NameIdentifier, user.PhoneNum),
                     new Claim(ClaimTypes.Name, userInformation.Name),
                     new Claim(type: "Id", value: userInformation.Id.ToString()),
-                    new Claim(type: "AvaSrc", value: userInformation.AvaSrc != null ? userInformation.AvaSrc : "0"),
+                    new Claim(type: "AvaSrc", value: userInformation.AvaSrc != null ? userInformation.AvaSrc : ""),
                     new Claim(type: "CertificationSrc", value: userInformation.CertificationSrc),
-                    new Claim(ClaimTypes.Role, user.Role)
+                    new Claim(ClaimTypes.Role, signInDto.Role)
                 };
             }
-            else // donor
+            else if (signInDto.Role == "donor")
             {
                 var userInformation = await _donorDal.GetByPhoneNum(user.PhoneNum);
 
@@ -183,8 +204,25 @@ namespace DonationAppDemo.Services
                     new Claim(ClaimTypes.Name, userInformation.Name),
                     new Claim(type: "Id", value: userInformation.Id.ToString()),
                     new Claim(type: "AvaSrc", value: userInformation.AvaSrc != null ? userInformation.AvaSrc : "0"),
-                    new Claim(ClaimTypes.Role, user.Role)
+                    new Claim(ClaimTypes.Role, signInDto.Role)
                 };
+            }
+            else if (signInDto.Role == "admin")
+            {
+                var userInformation = await _adminDal.GetByPhoneNum(user.PhoneNum);
+
+                // Create claims
+                authClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.PhoneNum),
+                    new Claim(ClaimTypes.Name, userInformation.Name),
+                    new Claim(type: "Id", value: userInformation.Id.ToString()),
+                    new Claim(ClaimTypes.Role, signInDto.Role)
+                };
+            }
+            else
+            {
+                throw new Exception($"Undentified role {signInDto.Role}");
             }
 
             // Create Jwt
@@ -199,25 +237,6 @@ namespace DonationAppDemo.Services
             var tokenAsString = new JwtSecurityTokenHandler().WriteToken(token);
 
             return tokenAsString;
-        }
-        public async Task<bool> UpdateApprovementOrganiser(string phoneNum, int organiserId)
-        {
-            // Get current user
-            var handler = new JwtSecurityTokenHandler();
-            string authHeader = _httpContextAccessor.HttpContext.Request.Headers["Authorization"];
-            authHeader = authHeader.Replace("Bearer ", "");
-            var jsonToken = handler.ReadToken(authHeader);
-            var tokenS = handler.ReadJwtToken(authHeader) as JwtSecurityToken;
-            var currentUserId = tokenS.Claims.First(claim => claim.Type == "Id").Value.ToString();
-
-            // Approve organiser
-            var result = await _transactionDal.UpdateAccountOrganiserApprovement(organiserId, Int32.Parse(currentUserId), phoneNum);
-            if (!result)
-            {
-                throw new Exception($"Cannot approve organiser {organiserId}");
-            }
-
-            return result;
         }
     }
 }

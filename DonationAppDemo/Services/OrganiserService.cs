@@ -1,28 +1,47 @@
-﻿using DonationAppDemo.DAL;
+﻿using DonationAppDemo.DAL.Interfaces;
 using DonationAppDemo.DTOs;
 using DonationAppDemo.Models;
+using DonationAppDemo.Services.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
+using System.Reflection;
 using System.Security.Claims;
+using System.Xml.Linq;
 
 namespace DonationAppDemo.Services
 {
     public class OrganiserService : IOrganiserService
     {
         private readonly IOrganiserDal _organiserDal;
+        private readonly ITransactionDal _transactionDal;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUtilitiesService _utilitiesService;
 
         public OrganiserService(IOrganiserDal organiserDal,
+            ITransactionDal transactionDal,
             IHttpContextAccessor httpContextAccessor,
             IUtilitiesService utilitiesService)
         {
             _organiserDal = organiserDal;
+            _transactionDal = transactionDal;
             _httpContextAccessor = httpContextAccessor;
             _utilitiesService = utilitiesService;
         }
-        public async Task<List<Organiser>> GetAll()
+        public async Task<List<Organiser>> GetAll(int pageIndex)
         {
-            var organisers = await _organiserDal.GetAll();
+            var organisers = await _organiserDal.GetAll(pageIndex);
+
+            return organisers;
+        }
+        public async Task<List<Organiser>> GetSearchedList(int pageIndex, string text)
+        {
+            var organisers = await _organiserDal.GetSearchedList(pageIndex, text);
+
+            return organisers;
+        }
+        public async Task<List<Organiser>> GetAllUnCensored(int pageIndex)
+        {
+            var organisers = await _organiserDal.GetAllUnCensored(pageIndex);
 
             return organisers;
         }
@@ -84,6 +103,61 @@ namespace DonationAppDemo.Services
                 await _utilitiesService.CloudinaryDeletePhotoAsync(imagePublicId);
                 throw new Exception("Error while updating on database");
             }
+        }
+        public async Task<bool> BecomeOrganiser(SignUpOrganiserDto signUpOrganiserDto)
+        {
+            // Get current user
+            var handler = new JwtSecurityTokenHandler();
+            string authHeader = _httpContextAccessor.HttpContext.Request.Headers["Authorization"];
+            authHeader = authHeader.Replace("Bearer ", "");
+            var jsonToken = handler.ReadToken(authHeader);
+            var tokenS = handler.ReadJwtToken(authHeader) as JwtSecurityToken;
+            var phoneNum = tokenS.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value.ToString();
+
+            // Add certification image to cloudinary
+            var uploadImageResult = await _utilitiesService.CloudinaryUploadPhotoAsync(signUpOrganiserDto.CertificationFile);
+            if (uploadImageResult.Error != null)
+            {
+                throw new Exception("Cannot upload certidication image");
+            }
+
+            var organiserDto = new OrganiserDto()
+            {
+                PhoneNum = signUpOrganiserDto.PhoneNum,
+                Name = signUpOrganiserDto.Name,
+                Gender = signUpOrganiserDto.Gender,
+                Dob = signUpOrganiserDto.Dob,
+                Email = signUpOrganiserDto.Email,
+                Address = signUpOrganiserDto.Address,
+                CertificationSrc = uploadImageResult.SecureUrl.AbsoluteUri,
+                Description = signUpOrganiserDto.Description
+            };
+
+            // Check existed organiser role of account in AccountDal
+            // Save to sql server db
+            var transactionResult = await _transactionDal.BecomeOrganiser(phoneNum, "organiser", false, organiserDto, uploadImageResult.PublicId);
+            if (transactionResult == false)
+            {
+                await _utilitiesService.CloudinaryDeletePhotoAsync(uploadImageResult.PublicId);
+                throw new Exception("Sign up failed");
+            }
+
+            return true;
+        }
+        public async Task<Organiser> UpdateApprovement(int organiserId)
+        {
+            // Get current user
+            var handler = new JwtSecurityTokenHandler();
+            string authHeader = _httpContextAccessor.HttpContext.Request.Headers["Authorization"];
+            authHeader = authHeader.Replace("Bearer ", "");
+            var jsonToken = handler.ReadToken(authHeader);
+            var tokenS = handler.ReadJwtToken(authHeader) as JwtSecurityToken;
+            var currentUserId = tokenS.Claims.First(claim => claim.Type == "Id").Value.ToString();
+
+            // Approve organiser
+            var result = await _organiserDal.UpdateApprovement(organiserId, Int32.Parse(currentUserId));
+
+            return result;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using DonationAppDemo.DTOs;
+﻿using DonationAppDemo.DAL.Interfaces;
+using DonationAppDemo.DTOs;
 using DonationAppDemo.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,16 +13,28 @@ namespace DonationAppDemo.DAL
         {
             _context = context;
         }
-        public async Task<List<Admin>> GetAll()
+        public async Task<List<Admin>> GetAll(int pageIndex)
         {
-            var usersInformation = await _context.Admin.ToListAsync();
+            var usersInformation = await _context.Admin
+                .Skip((pageIndex - 1) * 20)
+                .Take(20)
+                .ToListAsync();
             return usersInformation;
         }
-        public async Task<Admin?> GetById(int id)
+        public async Task<List<Admin>> GetSearchedList(int pageIndex, string text)
+        {
+            var usersInformation = await _context.Admin
+                .Where(x => x.AccountId == text || x.Id.ToString() == text || x.Name == text)
+                .Skip((pageIndex - 1) * 20)
+                .Take(20)
+                .ToListAsync();
+            return usersInformation;
+        }
+        /*public async Task<Admin?> GetById(int id)
         {
             var userInformation = await _context.Admin.Where(x => x.Id == id).FirstOrDefaultAsync();
             return userInformation;
-        }
+        }*/
         public async Task<Admin?> GetByPhoneNum(string phoneNum)
         {
             var userInformation = await _context.Admin.Where(x => x.AccountId == phoneNum).FirstOrDefaultAsync();

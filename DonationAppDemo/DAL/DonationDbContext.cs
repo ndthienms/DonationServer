@@ -1,7 +1,9 @@
 ﻿using CloudinaryDotNet;
+using DonationAppDemo.Helper;
 using DonationAppDemo.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using System.Data.SqlTypes;
 
 namespace DonationAppDemo.DAL
 {
@@ -13,6 +15,8 @@ namespace DonationAppDemo.DAL
         public virtual DbSet<Campaign> Campaign { get; set; } = null!;
         public virtual DbSet<CommentPost> CommentPost { get; set; } = null!;
         public virtual DbSet<Donation> Donation { get; set; } = null!;
+        public virtual DbSet<Transference> Transference { get; set; } = null!;
+        public virtual DbSet<CampaignStatistics> CampaignStatistics { get; set; } = null!;
         public virtual DbSet<PaymentMethod> PaymentMethod { get; set; } = null!;
         public virtual DbSet<Donor> Donor { get; set; } = null!;
         public virtual DbSet<ImageCampaign> ImageCampaign { get; set; } = null!;
@@ -35,7 +39,7 @@ namespace DonationAppDemo.DAL
                 x.DonorId
             });
 
-            // Seeding admin data
+            // Seed data
         }
     }
 }
