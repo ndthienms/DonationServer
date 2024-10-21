@@ -36,7 +36,7 @@ namespace DonationAppDemo.DAL
             if(existedRateCampaign != null)
             {
                 existedRateCampaign.Rate = rateCampaignDto.Rate;
-                existedRateCampaign.Content = rateCampaignDto.Content;
+                existedRateCampaign.Comment = rateCampaignDto.Content;
                 _context.RateCampaign.Update(existedRateCampaign);
                 await _context.SaveChangesAsync();
             }

@@ -64,7 +64,7 @@ namespace DonationAppDemo.Services
                 CoverSrcPublicId = coverSrcPublicId,
                 CreatedDate = DateTime.Now,
                 CreatedBy = null,
-                disabled = false,
+                Disabled = false,
                 UpdatedDate = DateTime.Now,
                 UpdatedBy = null,
             };

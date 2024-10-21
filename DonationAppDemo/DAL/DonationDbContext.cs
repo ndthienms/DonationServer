@@ -11,6 +11,7 @@ namespace DonationAppDemo.DAL
     {
         public DonationDbContext(DbContextOptions<DonationDbContext> options) : base(options) { }
         public virtual DbSet<DonationAppDemo.Models.Account> Account { get; set; } = null!;
+        public virtual DbSet<UserToken> UserToken { get; set; } = null!;
         public virtual DbSet<Admin> Admin { get; set; } = null!;
         public virtual DbSet<Campaign> Campaign { get; set; } = null!;
         public virtual DbSet<CommentPost> CommentPost { get; set; } = null!;
