@@ -1,4 +1,6 @@
-﻿namespace DonationAppDemo.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace DonationAppDemo.Models
 {
     public class Expense
     {
@@ -8,7 +10,9 @@
         public decimal? Amount { get; set; }
         public int? OrganiserId { get; set; }
         public int? CampaignId { get; set; }
+        [NotMapped]
         public virtual Organiser? Organiser { get; set; }
+        [NotMapped]
         public virtual Campaign? Campaign { get; set; }
     }
 }

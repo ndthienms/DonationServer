@@ -1,4 +1,6 @@
-﻿namespace DonationAppDemo.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace DonationAppDemo.Models
 {
     public class Donor
     {
@@ -17,8 +19,15 @@
         public DateTime? UpdatedDate { get; set; }
         public int? UpdatedBy { get; set; }
         public string? AccountId { get; set; }
+        [NotMapped]
         public virtual Account? Account { get; set; }
+        [NotMapped]
         public ICollection<RateCampaign>? RateCampaigns { get; set; }
+        [NotMapped]
         public ICollection<Donation>? Donations { get; set; }
+        [NotMapped]
+        public ICollection<Notification>? Notifications { get; set; }
+        [NotMapped]
+        public ICollection<CommentPost>? CommentPosts { get; set; }
     }
 }

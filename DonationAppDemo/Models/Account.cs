@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DonationAppDemo.Models
 {
@@ -14,11 +15,11 @@ namespace DonationAppDemo.Models
         public DateTime? UpdatedDate { get; set; }
         public int? UpdatedBy { get; set;}
         public bool? Disabled { get; set; } //if account signed up organiser role -> disabled == true (waiting for acceptance)
+        [NotMapped]
         public ICollection<Admin>? Admins { get; set; }
+        [NotMapped]
         public ICollection<Organiser>? Organisers { get; set; }
+        [NotMapped]
         public ICollection<Donor>? Donors { get; set; }
-        public ICollection<Notification>? Notifications { get; set; }
-        public ICollection<Post>? Posts { get; set; }
-        public ICollection<CommentPost>? CommentPosts { get; set; }
     }
 }

@@ -1,4 +1,7 @@
-﻿namespace DonationAppDemo.Models
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace DonationAppDemo.Models
 {
     public class Organiser
     {
@@ -22,8 +25,15 @@
         public DateTime? UpdatedDate { get; set; }
         public int? UpdatedBy { get; set; }
         public string? AccountId { get; set; }
+        [NotMapped]
         public virtual Account? Account { get; set; }
+        [NotMapped]
         public ICollection<Campaign>? Campaigns { get; set; }
+        [NotMapped]
         public ICollection<Expense>? Expenses { get; set; }
+        [NotMapped]
+        public ICollection<Notification>? Notifications { get; set; }
+        [NotMapped]
+        public ICollection<CommentPost>? CommentPosts { get; set; }
     }
 }

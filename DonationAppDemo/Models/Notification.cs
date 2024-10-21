@@ -1,4 +1,6 @@
-﻿namespace DonationAppDemo.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace DonationAppDemo.Models
 {
     public class Notification
     {
@@ -7,7 +9,17 @@
         public string? NotificationText { get; set;}
         public DateTime? NotificationDate { get; set; }
         public bool? NotificationType { get; set;} // unread == 0 / read == 1
-        public string? AccountId { get; set; }
-        public virtual Account? Account { get; set; }
+        public int? FromUserId { get; set; }
+        public string? FromUserRole { get; set; }
+        public int? ToUserId { get; set; }
+        public string? ToUserRole { get; set; }
+        [NotMapped]
+        public virtual Admin? FromAdmin { get; set; }
+        [NotMapped]
+        public virtual Organiser? FromOrganiser { get; set; }
+        [NotMapped]
+        public virtual Organiser? ToOrganiser { get; set; }
+        [NotMapped]
+        public virtual Donor? ToDonor { get; set; }
     }
 }
