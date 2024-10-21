@@ -22,6 +22,16 @@ namespace DonationAppDemo.Services
             _transactionDal = transactionDal;
         }
 
+        public async Task<Campaign?> Get(int campaignId)
+        {
+            var campaign = await _campaignDal.Get(campaignId);
+            if (campaign == null)
+            {
+                throw new Exception("Cannot find the campaign");
+            }
+            return campaign;
+        }
+
         public async Task<Campaign> CreateCampaign(CampaignDto campaignDto)
         {
             string coverSrc = "";
@@ -44,7 +54,6 @@ namespace DonationAppDemo.Services
             //Create Campaign and add to DTB through CampaignDal.Add
             var campaign = new Campaign()
             {
-                Id = campaignDto.Id,
                 Title = campaignDto.Title,
                 Target = campaignDto.Target,
                 Description = campaignDto.Description,
@@ -55,11 +64,21 @@ namespace DonationAppDemo.Services
                 CoverSrcPublicId = coverSrcPublicId,
                 CreatedDate = DateTime.Now,
                 CreatedBy = null,
-                Disabled = true,
-                UpdatedDate = null,
+                disabled = false,
+                UpdatedDate = DateTime.Now,
                 UpdatedBy = null,
             };
             await _campaignDal.Add(campaign);
+            return campaign;
+        }
+
+        public async Task<Campaign> UpdateCampaign(CampaignDto campaignDto)
+        {
+            var campaign = await _campaignDal.Update(campaignDto);
+            if (campaign == null)
+            {
+                throw new Exception("Cannot find the campaign");
+            }
             return campaign;
         }
 
@@ -69,6 +88,16 @@ namespace DonationAppDemo.Services
             if (!result)
             {
                 throw new Exception("Failed to do delete campaign");
+            }
+            return result;
+        }
+
+        public async Task<bool> ChangeStatusCampaign(int campaignId, int statusId)
+        {
+            var result = await _campaignDal.ChangeStatus(campaignId, statusId);
+            if (!result)
+            {
+                throw new Exception("Cannot change Campaign's Status");
             }
             return result;
         }
@@ -90,6 +119,17 @@ namespace DonationAppDemo.Services
             };
             await _rateCampaignDal.Add(rateCampaign);
             return rateCampaign;
+        }
+        public async Task<RateCampaign> UpdateRateCampaign(RateCampaignDto rateCampaignDto)
+        {
+            var rate = await _rateCampaignDal.CheckExistedRateCampaign(rateCampaignDto);
+            if (!rate)
+            {
+                throw new Exception("The user has not rated this campaign.");
+            }
+            var result = await _rateCampaignDal.Update(rateCampaignDto);
+            if (result == null) throw new Exception("Failed to update rate campaign.");
+            return result;
         }
 
         public async Task<List<ImageCampaign>> AddListImageCampaign(List<ImageCampaignDto> listImageCampaignDto)
@@ -120,6 +160,15 @@ namespace DonationAppDemo.Services
                 }
             }
             return imageCampaigns;
+        }
+        public async Task<bool> RemoveListImageCampaign(List<ImageCampaignDto> listImageCampaignDto)
+        {
+            var result = await _imageCampaignDal.RemoveListImages(listImageCampaignDto);
+            if(result == false)
+            {
+                throw new Exception("Can not find the Image");
+            }
+            return result;
         }
     }
 }

@@ -32,14 +32,15 @@ namespace DonationAppDemo.DAL
         public async Task<RateCampaign> Update(RateCampaignDto rateCampaignDto)
         {
             //check if user has rated the campaign
-            var existingRateCampaign = await _context.RateCampaign.Where(x => x.CampaignId == rateCampaignDto.CampaignId && x.DonorId == rateCampaignDto.DonorId).FirstOrDefaultAsync();
-            if(existingRateCampaign != null)
+            var existedRateCampaign = await _context.RateCampaign.Where(x => x.CampaignId == rateCampaignDto.CampaignId && x.DonorId == rateCampaignDto.DonorId).FirstOrDefaultAsync();
+            if(existedRateCampaign != null)
             {
-                existingRateCampaign.Rate = rateCampaignDto.Rate;
-                existingRateCampaign.Comment = rateCampaignDto.Content;
+                existedRateCampaign.Rate = rateCampaignDto.Rate;
+                existedRateCampaign.Content = rateCampaignDto.Content;
+                _context.RateCampaign.Update(existedRateCampaign);
+                await _context.SaveChangesAsync();
             }
-            await _context.SaveChangesAsync();
-            return existingRateCampaign;
+            return existedRateCampaign;
         }
 
         public async Task<bool> RemoveByCampaignId(int campaignId)
@@ -59,12 +60,6 @@ namespace DonationAppDemo.DAL
 
         public async Task<List<RateCampaign>> GetById(int campaignId, int pageSize, int pageIndex)
         {
-            var campaignExists = await _context.Campaign.AnyAsync(c => c.Id == campaignId);
-
-            if (!campaignExists)
-            {
-                return new List<RateCampaign>();
-            }
             // Fetch all image campaigns that match the given campaignId
             return await _context.RateCampaign
                                     .Where(x => x.CampaignId == campaignId)
@@ -74,11 +69,6 @@ namespace DonationAppDemo.DAL
         }
         public async Task<List<RateCampaign>> GetAllById(int campaignId)
         {
-            var campaignExists = await _context.Campaign.AnyAsync(c => c.Id == campaignId);
-            if (!campaignExists)
-            {
-                return new List<RateCampaign>();
-            }
             // Fetch all image campaigns that match the given campaignId
             return await _context.RateCampaign
                                     .Where(x => x.CampaignId == campaignId)

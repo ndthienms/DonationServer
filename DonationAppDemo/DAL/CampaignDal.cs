@@ -19,27 +19,40 @@ namespace DonationAppDemo.DAL
             await _context.SaveChangesAsync();
             return campaign;
         }
-
+        public async Task<Campaign?> Get(int campaignId)
+        {
+            var campaign = await _context.Campaign.Where(x => x.Id == campaignId).FirstOrDefaultAsync();
+            return campaign;
+        }
         public async Task<Campaign> Update(CampaignDto campaignDto)
         {
-            var existingCampaign = await _context.Campaign.Where(x => x.Id == campaignDto.Id).FirstOrDefaultAsync();
-            if (existingCampaign == null)
+            var campaign = await _context.Campaign.Where(x => x.Id == campaignDto.Id).FirstOrDefaultAsync();
+            if (campaign == null)
             {
                 throw new KeyNotFoundException("Campaign not found");
             }
-            existingCampaign.Title = campaignDto.Title;
-            existingCampaign.Target = campaignDto.Target;
-            existingCampaign.Description = campaignDto.Description;
-            existingCampaign.Address = campaignDto.Address;
-            existingCampaign.TargetAmount = campaignDto.TargetAmount;
-            existingCampaign.UpdatedDate = DateTime.Now;
+            campaign.Title = campaignDto.Title;
+            campaign.Target = campaignDto.Target;
+            campaign.Description = campaignDto.Description;
+            campaign.Address = campaignDto.Address;
+            campaign.TargetAmount = campaignDto.TargetAmount;
+            campaign.UpdatedDate = DateTime.Now;
+            _context.Campaign.Update(campaign);
             await _context.SaveChangesAsync();
-            return existingCampaign;
+            return campaign;
         }
 
         public async Task<bool> Remove(int campaignId)
         {
-            var campaign = await _context.Campaign.Where(x => x.Id == campaignId).FirstOrDefaultAsync();
+            var hasDonations = await (
+                from cp in _context.Campaign
+                join dt in _context.Donation
+                on cp.Id equals dt.CampaignId
+                where cp.Id == campaignId
+                select dt.Id
+                ).AnyAsync();
+            if (hasDonations) return false;
+            /*var campaign = await _context.Campaign.Where(x => x.Id == campaignId).FirstOrDefaultAsync();
             if (campaign == null)
             {
                 return false;
@@ -49,6 +62,11 @@ namespace DonationAppDemo.DAL
             if (hasDonations)
             {
                 //Check if Campaign existed in the Donation table
+                return false;
+            }*/
+            var campaign = await _context.Campaign.Where(x => x.Id == campaignId).FirstOrDefaultAsync();
+            if (campaign == null)
+            {
                 return false;
             }
             _context.Campaign.Remove(campaign);
