@@ -146,6 +146,8 @@ namespace DonationAppDemo.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPost]
         [Route("DeleteListImage")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "organiser")]
         public async Task<IActionResult> DeleteListImage([FromBody] List<ImageCampaignDto> imageCampaignDtos)

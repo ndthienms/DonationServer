@@ -9,6 +9,7 @@ using System.Text.Json;
 using DonationAppDemo.Services;
 using DonationAppDemo.DAL.Interfaces;
 using DonationAppDemo.Services.Interfaces;
+using DonationAppDemo.HubConfig;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,6 +58,8 @@ builder.Services.AddTransient<ICampaignDal, CampaignDal>();
 builder.Services.AddTransient<IImageCampaignDal, ImageCampaignDal>();
 builder.Services.AddTransient<IRateCampaignDal, RateCampaignDal>();
 builder.Services.AddTransient<ITransactionDal, TransactionDal>();
+builder.Services.AddTransient<IDonationDal, DonationDal>();
+builder.Services.AddTransient<ICampaignStatisticsDal, CampaignStatisticsDal>();
 
 /*Service*/
 builder.Services.AddTransient<IUserAuthenticationService, UserAuthenticationService>();
@@ -66,6 +69,8 @@ builder.Services.AddTransient<IDonorService, DonorService>();
 builder.Services.AddTransient<IOrganiserService, OrganiserService>();
 builder.Services.AddTransient<IUtilitiesService, UtilitiesService>();
 builder.Services.AddTransient<ICampaignService, CampaignService>();
+builder.Services.AddTransient<IDonationService, DonationService>();
+builder.Services.AddTransient<IDonationHubService, DonationHubService>();
 
 // HttpContext
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -77,6 +82,12 @@ builder.Services.AddCors(option =>
     {
         builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
     });
+});
+
+// SignalR
+builder.Services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = true;
 });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -101,5 +112,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<DonationHub>("/donationhub");
 
 app.Run();

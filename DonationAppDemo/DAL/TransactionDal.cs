@@ -1,5 +1,6 @@
 ﻿using DonationAppDemo.DAL.Interfaces;
 using DonationAppDemo.DTOs;
+using DonationAppDemo.Models;
 
 namespace DonationAppDemo.DAL
 {
@@ -10,30 +11,36 @@ namespace DonationAppDemo.DAL
         private readonly IAdminDal _adminDal;
         private readonly IDonorDal _donorDal;
         private readonly IOrganiserDal _organiserDal;
-
+        private readonly IDonationDal _donationDal;
+        private readonly ICampaignStatisticsDal _campaignStatisticsDal;
         private readonly ICampaignDal _campaignDal;
         private readonly IImageCampaignDal _imageCampaignDal;
         private readonly IRateCampaignDal _rateCampaignDal;
 
 
         public TransactionDal(DonationDbContext context,
-            //Account
+            // Account
             IAccountDal accountDal,
             IAdminDal adminDal,
             IDonorDal donorDal,
             IOrganiserDal organiserDal,
-            //Campaign
+            // Payment
+            IDonationDal donationDal,
+            ICampaignStatisticsDal campaignStatisticsDal,
+            // Campaign
             ICampaignDal campaignDal,
             IImageCampaignDal imageCampaignDal,
             IRateCampaignDal rateCampaignDal)
         {
             _context = context;
-            //Account
+            // Account
             _accountDal = accountDal;
             _adminDal = adminDal;
             _donorDal = donorDal;
             _organiserDal = organiserDal;
-            //Campaign
+            _donationDal = donationDal;
+            _campaignStatisticsDal = campaignStatisticsDal;
+            // Campaign
             _campaignDal = campaignDal;
             _imageCampaignDal = imageCampaignDal;
             _rateCampaignDal = rateCampaignDal;
@@ -155,6 +162,27 @@ namespace DonationAppDemo.DAL
                 {
                     transaction.Rollback();
                     return false;
+                }
+            }
+        }
+
+        // Donation + CampaignStatistics
+        public async Task<CampaignStatistics?> AddDonation(PaymentResponseDto paymentResponseDto)
+        {
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    await _donationDal.Add(paymentResponseDto);
+                    var campaignStatistics = await _campaignStatisticsDal.Update(paymentResponseDto.CampaignId, paymentResponseDto.Amount, "donation");
+
+                    transaction.Commit();
+                    return campaignStatistics;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    return null;
                 }
             }
         }
