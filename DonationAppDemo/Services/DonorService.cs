@@ -43,6 +43,12 @@ namespace DonationAppDemo.Services
             
             return donor;
         }
+        public async Task<List<Donor>?> GetByIdList(List<int?>? donorIdList)
+        {
+            var donors = await _donorDal.GetByIdList(donorIdList);
+
+            return donors;
+        }
         public async Task<Donor> Update(int donorId, DonorDto donorDto)
         {
             var donor = await _donorDal.Update(donorId, donorDto);

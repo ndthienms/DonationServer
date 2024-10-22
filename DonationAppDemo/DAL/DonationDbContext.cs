@@ -33,12 +33,25 @@ namespace DonationAppDemo.DAL
         {
             base.OnModelCreating(modelBuilder);
 
-            //Add multiple primary keys
+            // Add multiple primary keys
             modelBuilder.Entity<RateCampaign>().HasKey(x => new
             {
                 x.CampaignId,
                 x.DonorId
             });
+
+            // Add index
+            modelBuilder.Entity<Admin>()
+                .HasIndex(u => u.Name)
+                .HasDatabaseName("IX_Admin_Name");
+
+            modelBuilder.Entity<Organiser>()
+                .HasIndex(u => u.Name)
+                .HasDatabaseName("IX_Organiser_Name");
+
+            modelBuilder.Entity<Donor>()
+                .HasIndex(u => u.Name)
+                .HasDatabaseName("IX_Donor_Name");
 
             // Seed data
         }

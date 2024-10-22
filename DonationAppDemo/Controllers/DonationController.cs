@@ -23,6 +23,40 @@ namespace DonationAppDemo.Controllers
         }
 
         [HttpPost]
+        [Route("GetListByCampaignId/{campaignId}")]
+        public async Task<IActionResult> GetListByCampaignId([FromRoute]int campaignId, [FromBody]SearchDto searchDto)
+        {
+            try
+            {
+
+                var result = await _donationService.GetListByCampaignId(campaignId, searchDto);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+
+        [HttpPost]
+        [Route("GetListByDonorId")]
+        public async Task<IActionResult> GetListByDonorId([FromBody] SearchDto searchDto)
+        {
+            try
+            {
+
+                var result = await _donationService.GetListByDonorId(searchDto);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+
+        [HttpPost]
         [Route("CreatePaymentUrl")]
         public async Task<IActionResult> CreatePaymentUrl([FromBody]PaymentRequestDto request)
         {

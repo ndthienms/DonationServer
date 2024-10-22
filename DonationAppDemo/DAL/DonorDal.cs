@@ -1,5 +1,6 @@
 ﻿using DonationAppDemo.DAL.Interfaces;
 using DonationAppDemo.DTOs;
+using DonationAppDemo.Helper;
 using DonationAppDemo.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,8 +24,9 @@ namespace DonationAppDemo.DAL
         }
         public async Task<List<Donor>> GetSearchedList(int pageIndex, string text)
         {
+            string? nomalizedText = StringExtension.NormalizeString(text);
             var usersInformation = await _context.Donor
-                .Where(x => x.AccountId == text || x.Id.ToString() == text || x.Name == text)
+                .Where(x => x.AccountId == nomalizedText || x.Id.ToString() == nomalizedText || StringExtension.NormalizeString(x.Name) == nomalizedText)
                 .Skip((pageIndex - 1) * 20)
                 .Take(20)
                 .ToListAsync();
@@ -34,6 +36,12 @@ namespace DonationAppDemo.DAL
         {
             var userInformation = await _context.Donor.Where(x => x.Id == id).FirstOrDefaultAsync();
             return userInformation;
+        }
+        public async Task<List<Donor>?> GetByIdList(List<int?>? donorIdList)
+        {
+            if (donorIdList == null) return null;
+            var donors = await _context.Donor.Where(x => donorIdList.Contains(x.Id)).ToListAsync();
+            return donors;
         }
         public async Task<Donor?> GetByPhoneNum(string phoneNum)
         {

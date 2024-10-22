@@ -2,6 +2,8 @@
 using DonationAppDemo.DTOs;
 using DonationAppDemo.Models;
 using DonationAppDemo.Services.Interfaces;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace DonationAppDemo.Services
 {
@@ -27,6 +29,75 @@ namespace DonationAppDemo.Services
             _donorService = donorService;
             _config = config;
             _httpContextAccessor = httpContextAccessor;
+        }
+        public async Task<List<DonationDto>?> GetListByCampaignId(int campaignId, SearchDto searchDto)
+        {
+            // Get 20 records of donation
+            var donations = await _donationDal.GetListByCampaignId(campaignId, searchDto.PageIndex, searchDto.FromDate, searchDto.ToDate, searchDto.Id == null ? null : Int32.Parse(searchDto.Id));
+
+            if (donations == null)
+            {
+                return null;
+            }
+
+            // Get list of distict donor id according to donation list and get donor information list according to distict donor id list
+            List<int?>? donorIds = new List<int?>();
+            List<Donor>? donors = new List<Donor>();
+
+            if(searchDto.Id == null)
+            {
+                donorIds = donations.Select(x => x.DonorId).Distinct().ToList();
+
+                donors = await _donorService.GetByIdList(donorIds);
+            }
+            else
+            {
+                var donor = await _donorService.GetById(Int32.Parse(searchDto.Id));
+                if (donor != null)
+                {
+                    donors.Add(donor);
+                }
+            }
+            
+            // Combine donation list and dornor information list by donor id
+            List<DonationDto>? response = new List<DonationDto>();
+            if (donors != null)
+            {
+                response = donations.SelectMany(donation => donors.Where(donor => donor.Id == donation.DonorId).Select(donor => new DonationDto
+                {
+                    DonorId = donation.DonorId,
+                    DonorName = donor.Name,
+                    DonorAvaSrc = donor.AvaSrc,
+                    Amount = donation.Amount,
+                    DonationDate = donation.DonationDate
+                })).ToList();
+
+                return response;
+            }
+
+            response = donations.Select(donation => new DonationDto
+            {
+                DonorId = donation.DonorId,
+                DonorName = null,
+                DonorAvaSrc = null,
+                Amount = donation.Amount,
+                DonationDate = donation.DonationDate
+            }).ToList();
+
+            return response;
+        }
+
+        public async Task<List<DonationDto>?> GetListByDonorId(SearchDto searchDto)
+        {
+            // Get current user
+            var handler = new JwtSecurityTokenHandler();
+            string authHeader = _httpContextAccessor.HttpContext.Request.Headers["Authorization"];
+            authHeader = authHeader.Replace("Bearer ", "");
+            var jsonToken = handler.ReadToken(authHeader);
+            var tokenS = handler.ReadJwtToken(authHeader) as JwtSecurityToken;
+            var currentUserId = tokenS.Claims.First(claim => claim.Type == "Id").Value.ToString();
+
+            return await _donationDal.GetListByDonorId(Int32.Parse(currentUserId), searchDto.PageIndex, searchDto.FromDate, searchDto.ToDate);
         }
         public async Task<string> CreatePaymentUrl(HttpContext context, PaymentRequestDto request)
         {

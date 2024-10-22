@@ -8,6 +8,7 @@ namespace DonationAppDemo.DAL.Interfaces
         Task<List<Donor>> GetAll(int pageIndex);
         Task<List<Donor>> GetSearchedList(int pageIndex, string text);
         Task<Donor?> GetById(int id);
+        Task<List<Donor>?> GetByIdList(List<int?>? donorIdList);
         Task<Donor?> GetByPhoneNum(string phoneNum);
         Task<Donor> Add(DonorDto donorDto);
         Task<Donor> Update(int donorId, DonorDto donorDto);

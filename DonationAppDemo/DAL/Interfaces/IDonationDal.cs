@@ -5,6 +5,8 @@ namespace DonationAppDemo.DAL.Interfaces
 {
     public interface IDonationDal
     {
+        Task<List<Donation>?> GetListByCampaignId(int campaignId, int pageIndex, DateTime? fromDate, DateTime? toDate, int? donorId);
+        Task<List<DonationDto>?> GetListByDonorId(int donorId, int pageIndex, DateTime? fromDate, DateTime? toDate);
         Task<Donation> Add(PaymentResponseDto responseDto);
     }
 }
