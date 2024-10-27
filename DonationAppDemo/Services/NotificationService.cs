@@ -9,13 +9,44 @@ namespace DonationAppDemo.Services
     public class NotificationService : INotificationService
     {
         private readonly INotificationDal _notificationDal;
+        private readonly IUserTokenService _userTokenService;
+        private readonly IUtilitiesService _utilitiesService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public NotificationService(INotificationDal notificationDal,
+            IUserTokenService userTokenService,
+            IUtilitiesService utilitiesService,
             IHttpContextAccessor httpContextAccessor)
         {
             _notificationDal = notificationDal;
+            _userTokenService = userTokenService;
+            _utilitiesService = utilitiesService;
             _httpContextAccessor = httpContextAccessor;
+        }
+        public async Task<bool> CheckReadLatestNotification()
+        {
+            // Get current user
+            var handler = new JwtSecurityTokenHandler();
+            string authHeader = _httpContextAccessor.HttpContext.Request.Headers["Authorization"];
+            authHeader = authHeader.Replace("Bearer ", "");
+            var jsonToken = handler.ReadToken(authHeader);
+            var tokenS = handler.ReadJwtToken(authHeader) as JwtSecurityToken;
+            var currentUserId = tokenS.Claims.First(claim => claim.Type == "Id").Value.ToString();
+            var currentUserRole = tokenS.Claims.First(claim => claim.Type == ClaimTypes.Role).Value.ToString();
+
+            var notification = await _notificationDal.GetLatestNotification(Int32.Parse(currentUserId), currentUserRole);
+
+            if(notification == null)
+            {
+                return true;
+            }
+
+            if (notification.Marked == true)
+            {
+                return true;
+            }
+
+            return false;
         }
         public async Task<List<Notification>?> Get(int pageIndex)
         {
@@ -48,6 +79,41 @@ namespace DonationAppDemo.Services
             {
                 throw new Exception($"There is no notification id {notificationId}");
             }
+            return true;
+        }
+        public async Task<bool> AddList(List<int>? userIds, Notification notification)
+        {
+            if(userIds == null)
+            {
+                return true;
+            }
+
+            var result = await _notificationDal.AddList(userIds, notification);
+            if (!result)
+            {
+                throw new Exception($"Fail to add notification list");
+            }
+            return true;
+        }
+        public async Task<bool> Add(Notification notification)
+        {
+            var result = await _notificationDal.Add(notification);
+            if (!result)
+            {
+                throw new Exception($"Fail to add notification");
+            }
+            return true;
+        }
+        public async Task<bool> SendMultipleNotifications(List<int>? userIds, string userRole, string notificationTitle, string notificationBody)
+        {
+            if (userIds == null)
+            {
+                return true;
+            }
+
+            var tokens = await _userTokenService.GetTokenList(userIds, userRole);
+            await _utilitiesService.SendMultipleNotifications(tokens, notificationTitle, notificationBody);
+
             return true;
         }
     }

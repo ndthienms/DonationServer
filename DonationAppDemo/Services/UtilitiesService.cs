@@ -15,6 +15,10 @@ using Newtonsoft.Json;
 using ZaloPay.Helper.Crypto;
 using ZaloPay.Helper;
 using System.Globalization;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
+using FirebaseAdmin.Messaging;
+using Newtonsoft.Json.Linq;
 
 namespace DonationAppDemo.Services
 {
@@ -26,12 +30,23 @@ namespace DonationAppDemo.Services
         public UtilitiesService(IConfiguration config)
         {
             _config = config;
+
+            // Cloudinary
             Account account = new Account(
                 _config.GetValue<string>("CloudinarySettings:CloudName"),
                 _config.GetValue<string>("CloudinarySettings:ApiKey"),
                 _config.GetValue<string>("CloudinarySettings:ApiSecret"));
 
             _cloudinary = new Cloudinary(account);
+
+            // Firebase cloud messaging
+            if (FirebaseApp.DefaultInstance == null)
+            {
+                FirebaseApp.Create(new AppOptions()
+                {
+                    Credential = GoogleCredential.FromFile(_config["FirebaseSetting:ServiceAccountPath"])
+                });
+            }
         }
         public async Task<string> TwilioSendCodeSms(string phoneNum)
         {
@@ -294,6 +309,48 @@ namespace DonationAppDemo.Services
                 CampaignId = campaignId
             };
 
+        }
+        public async Task<string> SendNotification(string? token, string title, string body)
+        {
+            if (token == null)
+            {
+                return "No tokens found for sending";
+            }
+
+            var message = new FirebaseAdmin.Messaging.Message()
+            {
+                Token = token,
+                Notification = new FirebaseAdmin.Messaging.Notification
+                {
+                    Title = title,
+                    Body = body
+                }
+            };
+
+            // Send a message to the device corresponding to the provided registration token
+            string response = await FirebaseMessaging.DefaultInstance.SendAsync(message);
+            return response;
+        }
+        public async Task<BatchResponse?> SendMultipleNotifications(List<string>? tokens, string title, string body)
+        {
+            if (tokens == null)
+            {
+                return null;
+            }
+
+            var message = new FirebaseAdmin.Messaging.MulticastMessage()
+            {
+                Tokens = tokens,
+                Notification = new FirebaseAdmin.Messaging.Notification
+                {
+                    Title = title,
+                    Body = body
+                }
+            };
+
+            // Send a message to the device corresponding to the provided registration token
+            var response = await FirebaseMessaging.DefaultInstance.SendMulticastAsync(message);
+            return response;
         }
     }
 }

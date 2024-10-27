@@ -1,5 +1,6 @@
 ﻿using CloudinaryDotNet.Actions;
 using DonationAppDemo.DTOs;
+using FirebaseAdmin.Messaging;
 
 namespace DonationAppDemo.Services.Interfaces
 {
@@ -13,5 +14,7 @@ namespace DonationAppDemo.Services.Interfaces
         Task<PaymentResponseDto> VnPayPaymentExecute(IQueryCollection collections);
         Task<string> ZaloPayCreatePaymentUrl(PaymentRequestDto requestDto);
         Task<PaymentResponseDto> ZaloPayPaymentExecute(IQueryCollection collections);
+        Task<string> SendNotification(string? token, string title, string body);
+        Task<BatchResponse?> SendMultipleNotifications(List<string>? tokens, string title, string body);
     }
 }

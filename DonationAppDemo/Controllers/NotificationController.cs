@@ -20,6 +20,22 @@ namespace DonationAppDemo.Controllers
         }
 
         [HttpGet]
+        [Route("CheckReadLatestNotification")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "organiser, donor")]
+        public async Task<IActionResult> CheckReadLatestNotification()
+        {
+            try
+            {
+                var result = await _notificationService.CheckReadLatestNotification();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
         [Route("Get/{pageIndex}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "organiser, donor")]
         public async Task<IActionResult> Get([FromRoute]int pageIndex)
@@ -34,6 +50,7 @@ namespace DonationAppDemo.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
         [HttpPost]
         [Route("UpdateRead")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "organiser, donor")]

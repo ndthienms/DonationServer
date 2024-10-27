@@ -12,6 +12,14 @@ namespace DonationAppDemo.DAL
         {
             _context = context;
         }
+        public async Task<Notification?> GetLatestNotification(int userId, string userRole)
+        {
+            var latest = await _context.Notification
+                .Where(x => x.ToUserId == userId && x.ToUserRole == userRole)
+                .OrderByDescending(x => x.NotificationDate)
+                .FirstOrDefaultAsync();
+            return latest;
+        }
         public async Task<List<Notification>?> Get(int userId, string userRole, int pageIndex)
         {
             if (pageIndex == 1)
@@ -65,6 +73,46 @@ namespace DonationAppDemo.DAL
 
             _context.Notification.Update(notification);
             await _context.SaveChangesAsync();
+            return true;
+        }
+        public async Task<bool> AddList(List<int> userIds, Notification notification)
+        {
+            var notifications = userIds.Select(userId => new Notification
+            {
+                NotificationTitle = notification.NotificationTitle,
+                NotificationText = notification.NotificationText,
+                NotificationDate = notification.NotificationDate,
+                IsRead = false,
+                Marked = false,
+                FromUserId = notification.FromUserId,
+                FromUserRole = notification.FromUserRole,
+                ToUserId = userId,
+                ToUserRole = notification.ToUserRole,
+            });
+
+            _context.Notification.AddRange(notifications);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+        public async Task<bool> Add(Notification notificationDto)
+        {
+            var notification = new Notification
+            {
+                NotificationTitle = notificationDto.NotificationTitle,
+                NotificationText = notificationDto.NotificationText,
+                NotificationDate = notificationDto.NotificationDate,
+                IsRead = false,
+                Marked = false,
+                FromUserId = notificationDto.FromUserId,
+                FromUserRole = notificationDto.FromUserRole,
+                ToUserId = notificationDto.ToUserId,
+                ToUserRole = notificationDto.ToUserRole
+            };
+
+            _context.Notification.Add(notification);
+            await _context.SaveChangesAsync();
+
             return true;
         }
     }
