@@ -14,6 +14,7 @@ namespace DonationAppDemo.DAL
         public virtual DbSet<UserToken> UserToken { get; set; } = null!;
         public virtual DbSet<Admin> Admin { get; set; } = null!;
         public virtual DbSet<Campaign> Campaign { get; set; } = null!;
+        public virtual DbSet<CampaignParticipant> CampaignParticipant { get; set; } = null!;
         public virtual DbSet<CommentPost> CommentPost { get; set; } = null!;
         public virtual DbSet<Donation> Donation { get; set; } = null!;
         public virtual DbSet<Transference> Transference { get; set; } = null!;
@@ -35,6 +36,12 @@ namespace DonationAppDemo.DAL
 
             // Add multiple primary keys
             modelBuilder.Entity<RateCampaign>().HasKey(x => new
+            {
+                x.CampaignId,
+                x.DonorId
+            });
+
+            modelBuilder.Entity<CampaignParticipant>().HasKey(x => new
             {
                 x.CampaignId,
                 x.DonorId

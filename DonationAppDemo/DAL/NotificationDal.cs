@@ -61,7 +61,7 @@ namespace DonationAppDemo.DAL
                 return false;
             }
 
-            notification.NotificationType = true;
+            notification.IsRead = true;
 
             _context.Notification.Update(notification);
             await _context.SaveChangesAsync();

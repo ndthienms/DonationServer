@@ -37,5 +37,7 @@ namespace DonationAppDemo.Models
         public ICollection<Expense>? Expenses { get; set; }
         [NotMapped]
         public ICollection<Transference>? Transferences { get; set; }
+        [NotMapped]
+        public ICollection<CampaignParticipant>? CampaignParticipants { get; set; }
     }
 }

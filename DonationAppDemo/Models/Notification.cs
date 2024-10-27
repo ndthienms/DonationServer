@@ -8,7 +8,7 @@ namespace DonationAppDemo.Models
         public string? NotificationTitle { get; set; }
         public string? NotificationText { get; set;}
         public DateTime? NotificationDate { get; set; }
-        public bool? NotificationType { get; set;} // unread == 0 / read == 1
+        public bool? IsRead { get; set;} // unread == 0 / read == 1
         public bool? Marked { get; set; } // The last time of opening notification box
         public int? FromUserId { get; set; }
         public string? FromUserRole { get; set; }

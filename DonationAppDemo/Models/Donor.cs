@@ -29,5 +29,7 @@ namespace DonationAppDemo.Models
         public ICollection<Notification>? Notifications { get; set; }
         [NotMapped]
         public ICollection<CommentPost>? CommentPosts { get; set; }
+        [NotMapped]
+        public ICollection<CampaignParticipant>? CampaignParticipants { get; set; }
     }
 }
