@@ -12,7 +12,7 @@ namespace DonationAppDemo.Models
         public DateTime? EndDate { get; set; }
         public string? Address { get; set; }
         //public int? District { get; set; } //optional
-        //public int? City { get; set; } //optional
+        public string? City { get; set; }
         public int? StatusCampaignId { get; set; }
         public decimal? TargetAmount { get; set; }
         public string? CoverSrc { get; set; }
