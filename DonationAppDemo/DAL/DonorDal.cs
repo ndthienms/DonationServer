@@ -24,9 +24,9 @@ namespace DonationAppDemo.DAL
         }
         public async Task<List<Donor>> GetSearchedList(int pageIndex, string text)
         {
-            string? nomalizedText = StringExtension.NormalizeString(text);
+            string? normalizedText = StringExtension.NormalizeString(text);
             var usersInformation = await _context.Donor
-                .Where(x => x.AccountId == nomalizedText || x.Id.ToString() == nomalizedText || StringExtension.NormalizeString(x.Name) == nomalizedText)
+                .Where(x => x.AccountId == normalizedText || x.Id.ToString() == normalizedText || (x.NormalizedName != null && EF.Functions.Like(x.NormalizedName, $"%{normalizedText}%")))
                 .Skip((pageIndex - 1) * 20)
                 .Take(20)
                 .ToListAsync();
@@ -50,9 +50,11 @@ namespace DonationAppDemo.DAL
         }
         public async Task<Donor> Add(DonorDto donorDto)
         {
+            string? normalizedText = StringExtension.NormalizeString(donorDto.Name);
             var donor = new Donor()
             {
                 Name = donorDto.Name,
+                NormalizedName = normalizedText,
                 Gender = donorDto.Gender,
                 Dob = donorDto.Dob,
                 Email = donorDto.Email,
@@ -75,7 +77,10 @@ namespace DonationAppDemo.DAL
                 throw new Exception($"Not found user id {donorId}");
             }
 
+            string? normalizedText = StringExtension.NormalizeString(donorDto.Name);
+
             donor.Name = donorDto.Name;
+            donor.NormalizedName = normalizedText;
             donor.Gender = donorDto.Gender;
             donor.Dob = donorDto.Dob;
             donor.Email = donorDto.Email;

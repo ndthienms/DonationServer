@@ -5,8 +5,8 @@ namespace DonationAppDemo.Services.Interfaces
 {
     public interface IAdminService
     {
-        Task<List<Admin>> GetAll(int pageIndex); // admin
-        Task<List<Admin>> GetSearchedList(int pageIndex, string text);
+        Task<List<AdminDto>> GetAll(int pageIndex); // admin
+        Task<List<AdminDto>> GetSearchedList(int pageIndex, string text);
 
         //Task<Admin?> GetById(int adminId); // admin
         Task<Admin> Update(int adminId, AdminDto adminDto); // admin

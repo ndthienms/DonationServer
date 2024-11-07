@@ -20,13 +20,13 @@ namespace DonationAppDemo.Services
             _utilitiesService = utilitiesService;
             _httpContextAccessor = httpContextAccessor;
         }
-        public async Task<List<Admin>> GetAll(int pageIndex)
+        public async Task<List<AdminDto>> GetAll(int pageIndex)
         {
             var admins = await _adminDal.GetAll(pageIndex);
 
             return admins;
         }
-        public async Task<List<Admin>> GetSearchedList(int pageIndex, string text)
+        public async Task<List<AdminDto>> GetSearchedList(int pageIndex, string text)
         {
             var admin = await _adminDal.GetSearchedList(pageIndex, text);
 

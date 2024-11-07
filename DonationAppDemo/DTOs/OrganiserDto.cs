@@ -12,5 +12,6 @@
         public string? AvaSrc { get; set; }
         public string? CertificationSrc { get; set; }
         public string? Description { get; set; }
+        public string? Disabled { get; set;}
     }
 }

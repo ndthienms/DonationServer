@@ -24,9 +24,9 @@ namespace DonationAppDemo.DAL
         }
         public async Task<List<Organiser>> GetSearchedList(int pageIndex, string text)
         {
-            string? nomalizedText = StringExtension.NormalizeString(text);
+            string? normalizedText = StringExtension.NormalizeString(text);
             var usersInformation = await _context.Organiser
-                .Where(x => x.AccountId == nomalizedText || x.Id.ToString() == nomalizedText || StringExtension.NormalizeString(x.Name) == nomalizedText)
+                .Where(x => x.AccountId == normalizedText || x.Id.ToString() == normalizedText || (x.NormalizedName != null && EF.Functions.Like(x.NormalizedName, $"%{normalizedText}%")))
                 .Skip((pageIndex - 1) * 20)
                 .Take(20)
                 .ToListAsync();
@@ -53,9 +53,11 @@ namespace DonationAppDemo.DAL
         }
         public async Task<Organiser> Add(OrganiserDto organiserDto, string? certificationPublicId)
         {
+            string? normalizedText = StringExtension.NormalizeString(organiserDto.Name);
             var organiser = new Organiser()
             {
                 Name = organiserDto.Name,
+                NormalizedName = normalizedText,
                 Gender = organiserDto.Gender,
                 Dob = organiserDto.Dob,
                 Email = organiserDto.Email,
@@ -83,7 +85,10 @@ namespace DonationAppDemo.DAL
                 throw new Exception($"Not found user id {organiserId}");
             }
 
+            string? normalizedText = StringExtension.NormalizeString(organiserDto.Name);
+
             organiser.Name = organiserDto.Name;
+            organiser.NormalizedName = normalizedText;
             organiser.Gender = organiserDto.Gender;
             organiser.Dob = organiserDto.Dob;
             organiser.Email = organiserDto.Email;

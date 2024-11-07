@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace DonationAppDemo.Controllers
 {
@@ -37,6 +39,7 @@ namespace DonationAppDemo.Controllers
 
         [HttpPut]
         [Route("GetSearchedList/{pageIndex}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]
         public async Task<IActionResult> GetSearchedList([FromRoute] int pageIndex, [FromBody] string text)
         {
             try

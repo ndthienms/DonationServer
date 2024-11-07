@@ -10,5 +10,6 @@
         public string? Email { get; set; }
         public string? Address { get; set; }
         public string? AvaSrc { get; set; }
+        public string? Disabled { get; set; }
     }
 }
