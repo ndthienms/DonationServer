@@ -2,6 +2,7 @@
 using DonationAppDemo.DTOs;
 using DonationAppDemo.Models;
 using DonationAppDemo.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
@@ -192,13 +193,22 @@ namespace DonationAppDemo.Services
             // Hash password
             var hashSaltResult = Helper.DataEncryptionExtensions.HMACSHA512(signUpAdminDto.Password);
 
+            // Convert type data
+            bool disabled = false;
+            DateTime dob = DateTime.Parse(signUpAdminDto.Dob==null?throw new Exception("Date of birth is required") : signUpAdminDto.Dob);
+
+            if (signUpAdminDto.Disabled == "1")
+            {
+                disabled = true;
+            }
+
             // DonorDto
             var adminDto = new AdminDto()
             {
                 PhoneNum = signUpAdminDto.PhoneNum,
                 Name = signUpAdminDto.Name,
                 Gender = signUpAdminDto.Gender,
-                Dob = signUpAdminDto.Dob,
+                Dob = dob,
                 Email = signUpAdminDto.Email
             };
 
@@ -209,7 +219,7 @@ namespace DonationAppDemo.Services
                 PasswordHash = hashSaltResult.hashedCode,
                 PasswordSalt = hashSaltResult.keyCode,
                 Role = "admin",
-                Disabled = false
+                Disabled = disabled
             };
 
             // Add to account and organiser table in db
