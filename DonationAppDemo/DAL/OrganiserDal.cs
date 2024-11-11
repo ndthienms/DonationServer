@@ -14,21 +14,41 @@ namespace DonationAppDemo.DAL
         {
             _context = context;
         }
-        public async Task<List<Organiser>> GetAll(int pageIndex)
+        public async Task<List<OrganiserShortDto>> GetAll(int pageIndex)
         {
             var usersInformation = await _context.Organiser
                 .Skip((pageIndex - 1) * 20)
                 .Take(20)
+                .Join(_context.Account, user => user.AccountId, account => account.PhoneNum,
+                    (user, account) => new OrganiserShortDto()
+                    {
+                        Id = user.Id,
+                        Name = user.Name,
+                        Email = user.Email,
+                        PhoneNum = account.PhoneNum,
+                        Address = user.Address,
+                        Disabled = account.Disabled == true ? "Disabled" : "Active"
+                    })
                 .ToListAsync();
             return usersInformation;
         }
-        public async Task<List<Organiser>> GetSearchedList(int pageIndex, string text)
+        public async Task<List<OrganiserShortDto>> GetSearchedList(int pageIndex, string text)
         {
             string? normalizedText = StringExtension.NormalizeString(text);
             var usersInformation = await _context.Organiser
                 .Where(x => x.AccountId == normalizedText || x.Id.ToString() == normalizedText || (x.NormalizedName != null && EF.Functions.Like(x.NormalizedName, $"%{normalizedText}%")))
                 .Skip((pageIndex - 1) * 20)
                 .Take(20)
+                .Join(_context.Account, user => user.AccountId, account => account.PhoneNum,
+                    (user, account) => new OrganiserShortDto()
+                    {
+                        Id = user.Id,
+                        Name = user.Name,
+                        Email = user.Email,
+                        PhoneNum = account.PhoneNum,
+                        Address = user.Address,
+                        Disabled = account.Disabled == true ? "Disabled" : "Active"
+                    })
                 .ToListAsync();
             return usersInformation;
         }
@@ -58,7 +78,6 @@ namespace DonationAppDemo.DAL
             {
                 Name = organiserDto.Name,
                 NormalizedName = normalizedText,
-                Gender = organiserDto.Gender,
                 Dob = organiserDto.Dob,
                 Email = organiserDto.Email,
                 Address = organiserDto.Address,
@@ -89,7 +108,6 @@ namespace DonationAppDemo.DAL
 
             organiser.Name = organiserDto.Name;
             organiser.NormalizedName = normalizedText;
-            organiser.Gender = organiserDto.Gender;
             organiser.Dob = organiserDto.Dob;
             organiser.Email = organiserDto.Email;
             organiser.Address = organiserDto.Address;

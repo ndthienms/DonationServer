@@ -71,13 +71,15 @@ namespace DonationAppDemo.Services
                 throw new Exception("Cannot upload certidication image");
             }
 
+            // Convert type data
+            DateTime dob = DateTime.Parse(signUpOrganiserDto.Dob == null ? throw new Exception("Date of birth is required") : signUpOrganiserDto.Dob);
+
             // OrganiserDto
             var organiserDto = new OrganiserDto()
             {
                 PhoneNum = signUpOrganiserDto.PhoneNum,
                 Name = signUpOrganiserDto.Name,
-                Gender = signUpOrganiserDto.Gender,
-                Dob = signUpOrganiserDto.Dob,
+                Dob = dob,
                 Email = signUpOrganiserDto.Email,
                 Address = signUpOrganiserDto.Address,
                 CertificationSrc = uploadImageResult.SecureUrl.AbsoluteUri,

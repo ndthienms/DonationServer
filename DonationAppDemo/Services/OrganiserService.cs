@@ -27,13 +27,13 @@ namespace DonationAppDemo.Services
             _httpContextAccessor = httpContextAccessor;
             _utilitiesService = utilitiesService;
         }
-        public async Task<List<Organiser>> GetAll(int pageIndex)
+        public async Task<List<OrganiserShortDto>> GetAll(int pageIndex)
         {
             var organisers = await _organiserDal.GetAll(pageIndex);
 
             return organisers;
         }
-        public async Task<List<Organiser>> GetSearchedList(int pageIndex, string text)
+        public async Task<List<OrganiserShortDto>> GetSearchedList(int pageIndex, string text)
         {
             var organisers = await _organiserDal.GetSearchedList(pageIndex, text);
 
@@ -121,12 +121,20 @@ namespace DonationAppDemo.Services
                 throw new Exception("Cannot upload certidication image");
             }
 
+            // Convert type data
+            bool disabled = false;
+            DateTime dob = DateTime.Parse(signUpOrganiserDto.Dob == null ? throw new Exception("Date of birth is required") : signUpOrganiserDto.Dob);
+
+            if (signUpOrganiserDto.Disabled == "1")
+            {
+                disabled = true;
+            }
+
             var organiserDto = new OrganiserDto()
             {
                 PhoneNum = signUpOrganiserDto.PhoneNum,
                 Name = signUpOrganiserDto.Name,
-                Gender = signUpOrganiserDto.Gender,
-                Dob = signUpOrganiserDto.Dob,
+                Dob = dob,
                 Email = signUpOrganiserDto.Email,
                 Address = signUpOrganiserDto.Address,
                 CertificationSrc = uploadImageResult.SecureUrl.AbsoluteUri,

@@ -100,11 +100,20 @@ namespace DonationAppDemo.Services
             // Hash password
             var hashSaltResult = Helper.DataEncryptionExtensions.HMACSHA512(signUpOrganiserDto.Password);
 
-            // Add certification image to cloudinary
+            //Add certification image to cloudinary
             var uploadImageResult = await _utilitiesService.CloudinaryUploadPhotoAsync(signUpOrganiserDto.CertificationFile);
             if (uploadImageResult.Error != null)
             {
                 throw new Exception("Cannot upload certidication image");
+            }
+
+            // Convert type data
+            bool disabled = false;
+            DateTime dob = DateTime.Parse(signUpOrganiserDto.Dob == null ? throw new Exception("Date of birth is required") : signUpOrganiserDto.Dob);
+
+            if (signUpOrganiserDto.Disabled == "1")
+            {
+                disabled = true;
             }
 
             // OrganiserDto
@@ -112,12 +121,11 @@ namespace DonationAppDemo.Services
             {
                 PhoneNum = signUpOrganiserDto.PhoneNum,
                 Name = signUpOrganiserDto.Name,
-                Gender = signUpOrganiserDto.Gender,
-                Dob = signUpOrganiserDto.Dob,
+                Dob = dob,
                 Email = signUpOrganiserDto.Email,
                 Address = signUpOrganiserDto.Address,
                 CertificationSrc = uploadImageResult.SecureUrl.AbsoluteUri,
-                Description = signUpOrganiserDto.Description
+                Description = signUpOrganiserDto.Description,
             };
 
             // AccountDto
@@ -127,7 +135,7 @@ namespace DonationAppDemo.Services
                 PasswordHash = hashSaltResult.hashedCode,
                 PasswordSalt = hashSaltResult.keyCode,
                 Role = "organiser",
-                Disabled = false
+                Disabled = disabled
             };
 
             // Add to account and organiser table in db

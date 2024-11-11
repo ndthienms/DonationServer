@@ -99,7 +99,7 @@ namespace DonationAppDemo.Controllers
         [HttpPost]
         [Route("AddOrganiserAccount")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]
-        public async Task<IActionResult> AddOrganiserAccount([FromBody] SignUpOrganiserDto signUpOrganiserDto)
+        public async Task<IActionResult> AddOrganiserAccount([FromForm] SignUpOrganiserDto signUpOrganiserDto)
         {
             try
             {
