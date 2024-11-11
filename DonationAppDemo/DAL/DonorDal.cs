@@ -14,21 +14,41 @@ namespace DonationAppDemo.DAL
         {
             _context = context;
         }
-        public async Task<List<Donor>> GetAll(int pageIndex)
+        public async Task<List<UserDto>> GetAll(int pageIndex)
         {
             var usersInformation = await _context.Donor
                 .Skip((pageIndex - 1) * 20)
                 .Take(20)
+                .Join(_context.Account, user => user.AccountId, account => account.PhoneNum,
+                    (user, account) => new UserDto()
+                    {
+                        Id = user.Id,
+                        Name = user.Name,
+                        Email = user.Email,
+                        PhoneNum = account.PhoneNum,
+                        Address = user.Address,
+                        Disabled = account.Disabled == true ? "Disabled" : "Active"
+                    })
                 .ToListAsync();
             return usersInformation;
         }
-        public async Task<List<Donor>> GetSearchedList(int pageIndex, string text)
+        public async Task<List<UserDto>> GetSearchedList(int pageIndex, string text)
         {
             string? normalizedText = StringExtension.NormalizeString(text);
             var usersInformation = await _context.Donor
                 .Where(x => x.AccountId == normalizedText || x.Id.ToString() == normalizedText || (x.NormalizedName != null && EF.Functions.Like(x.NormalizedName, $"%{normalizedText}%")))
                 .Skip((pageIndex - 1) * 20)
                 .Take(20)
+                .Join(_context.Account, user => user.AccountId, account => account.PhoneNum,
+                    (user, account) => new UserDto()
+                    {
+                        Id = user.Id,
+                        Name = user.Name,
+                        Email = user.Email,
+                        PhoneNum = account.PhoneNum,
+                        Address = user.Address,
+                        Disabled = account.Disabled == true ? "Disabled" : "Active"
+                    })
                 .ToListAsync();
             return usersInformation;
         }

@@ -160,13 +160,22 @@ namespace DonationAppDemo.Services
             // Hash password
             var hashSaltResult = Helper.DataEncryptionExtensions.HMACSHA512(signUpDonorDto.Password);
 
+            // Convert type data
+            bool disabled = false;
+            DateTime dob = DateTime.Parse(signUpDonorDto.Dob == null ? throw new Exception("Date of birth is required") : signUpDonorDto.Dob);
+
+            if (signUpDonorDto.Disabled == "1")
+            {
+                disabled = true;
+            }
+
             // DonorDto
             var donorDto = new DonorDto()
             {
                 PhoneNum = signUpDonorDto.PhoneNum,
                 Name = signUpDonorDto.Name,
                 Gender = signUpDonorDto.Gender,
-                Dob = signUpDonorDto.Dob,
+                Dob = dob,
                 Email = signUpDonorDto.Email,
                 Address = signUpDonorDto.Address
             };
@@ -178,7 +187,7 @@ namespace DonationAppDemo.Services
                 PasswordHash = hashSaltResult.hashedCode,
                 PasswordSalt = hashSaltResult.keyCode,
                 Role = "donor",
-                Disabled = false
+                Disabled = disabled
             };
 
             // Add to account and organiser table in db

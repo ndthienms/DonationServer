@@ -1,6 +1,6 @@
 ﻿namespace DonationAppDemo.DTOs
 {
-    public class OrganiserShortDto
+    public class UserDto
     {
         public int? Id { get; set; }
         public string? PhoneNum { get; set; }

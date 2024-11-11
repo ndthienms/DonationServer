@@ -5,8 +5,8 @@ namespace DonationAppDemo.Services.Interfaces
 {
     public interface IDonorService
     {
-        Task<List<Donor>> GetAll(int pageIndex);
-        Task<List<Donor>> GetSearchedList(int pageIndex, string text);
+        Task<List<UserDto>> GetAll(int pageIndex);
+        Task<List<UserDto>> GetSearchedList(int pageIndex, string text);
         Task<Donor?> GetById(int donorId);
         Task<List<Donor>?> GetByIdList(List<int?>? donorIdList);
         Task<Donor> Update(int donorId, DonorDto donorDto);

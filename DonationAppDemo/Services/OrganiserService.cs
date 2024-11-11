@@ -27,13 +27,13 @@ namespace DonationAppDemo.Services
             _httpContextAccessor = httpContextAccessor;
             _utilitiesService = utilitiesService;
         }
-        public async Task<List<OrganiserShortDto>> GetAll(int pageIndex)
+        public async Task<List<UserDto>> GetAll(int pageIndex)
         {
             var organisers = await _organiserDal.GetAll(pageIndex);
 
             return organisers;
         }
-        public async Task<List<OrganiserShortDto>> GetSearchedList(int pageIndex, string text)
+        public async Task<List<UserDto>> GetSearchedList(int pageIndex, string text)
         {
             var organisers = await _organiserDal.GetSearchedList(pageIndex, text);
 
@@ -42,6 +42,12 @@ namespace DonationAppDemo.Services
         public async Task<List<Organiser>> GetAllUnCensored(int pageIndex)
         {
             var organisers = await _organiserDal.GetAllUnCensored(pageIndex);
+
+            return organisers;
+        }
+        public async Task<List<Organiser>> GetSearchedUncensoredList(int pageIndex, string text)
+        {
+            var organisers = await _organiserDal.GetSearchedUncensoredList(pageIndex, text);
 
             return organisers;
         }

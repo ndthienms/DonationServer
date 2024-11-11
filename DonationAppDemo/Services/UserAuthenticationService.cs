@@ -117,13 +117,16 @@ namespace DonationAppDemo.Services
             // Hash password
             var hashSaltResult = Helper.DataEncryptionExtensions.HMACSHA512(signUpDonorDto.Password);
 
+            // Convert type data
+            DateTime dob = DateTime.Parse(signUpDonorDto.Dob == null ? throw new Exception("Date of birth is required") : signUpDonorDto.Dob);
+
             // DonorDto
             var donorDto = new DonorDto()
             {
                 PhoneNum = signUpDonorDto.PhoneNum,
                 Name = signUpDonorDto.Name,
                 Gender = signUpDonorDto.Gender,
-                Dob = signUpDonorDto.Dob,
+                Dob = dob,
                 Email = signUpDonorDto.Email,
                 Address = signUpDonorDto.Address
             };

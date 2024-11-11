@@ -64,6 +64,21 @@ namespace DonationAppDemo.Controllers
             }
         }
 
+        [HttpPut]
+        [Route("GetSearchedUncensoredList/{pageIndex}")]
+        public async Task<IActionResult> GetSearchedUncensoredList([FromRoute] int pageIndex, [FromBody] string text)
+        {
+            try
+            {
+                var result = await _organiserService.GetSearchedUncensoredList(pageIndex, text);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpGet]
         [Route("GetById/{organiserId}")]
         public async Task<IActionResult> GetById([FromRoute]int organiserId)

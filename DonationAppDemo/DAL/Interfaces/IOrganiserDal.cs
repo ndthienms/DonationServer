@@ -5,9 +5,10 @@ namespace DonationAppDemo.DAL.Interfaces
 {
     public interface IOrganiserDal
     {
-        Task<List<OrganiserShortDto>> GetAll(int pageIndex);
-        Task<List<OrganiserShortDto>> GetSearchedList(int pageIndex, string text);
+        Task<List<UserDto>> GetAll(int pageIndex);
+        Task<List<UserDto>> GetSearchedList(int pageIndex, string text);
         Task<List<Organiser>> GetAllUnCensored(int pageIndex);
+        Task<List<Organiser>> GetSearchedUncensoredList(int pageIndex, string text);
         Task<Organiser?> GetById(int id);
         Task<Organiser?> GetByPhoneNum(string phoneNum);
         Task<Organiser> Add(OrganiserDto organiserDto, string? certificationPublicId);

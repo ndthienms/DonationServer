@@ -25,13 +25,13 @@ namespace DonationAppDemo.Services
             _utilitiesService = utilitiesService;
             _httpContextAccessor = httpContextAccessor;
         }
-        public async Task<List<Donor>> GetAll(int pageIndex)
+        public async Task<List<UserDto>> GetAll(int pageIndex)
         {
             var donors = await _donorDal.GetAll(pageIndex);
 
             return donors;
         }
-        public async Task<List<Donor>> GetSearchedList(int pageIndex, string text)
+        public async Task<List<UserDto>> GetSearchedList(int pageIndex, string text)
         {
             var donor = await _donorDal.GetSearchedList(pageIndex, text);
 
@@ -88,13 +88,16 @@ namespace DonationAppDemo.Services
             var tokenS = handler.ReadJwtToken(authHeader) as JwtSecurityToken;
             var phoneNum = tokenS.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value.ToString();
 
+            // Convert type data
+            DateTime dob = DateTime.Parse(signUpDonorDto.Dob == null ? throw new Exception("Date of birth is required") : signUpDonorDto.Dob);
+
             var donorDto = new DonorDto()
             {
                 Id = null,
                 PhoneNum = phoneNum,
                 Name = signUpDonorDto.Name,
                 Gender = signUpDonorDto.Gender,
-                Dob = signUpDonorDto.Dob,
+                Dob = dob,
                 Email = signUpDonorDto.Email,
                 Address = signUpDonorDto.Address,
                 AvaSrc = null
