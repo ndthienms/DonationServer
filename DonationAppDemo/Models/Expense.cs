@@ -10,9 +10,7 @@ namespace DonationAppDemo.Models
         public decimal? Amount { get; set; }
         public int? OrganiserId { get; set; }
         public int? CampaignId { get; set; }
-        [NotMapped]
         public virtual Organiser? Organiser { get; set; }
-        [NotMapped]
         public virtual Campaign? Campaign { get; set; }
     }
 }

@@ -6,9 +6,7 @@ namespace DonationAppDemo.Models
     {
         public int CampaignId { get; set; }
         public int DonorId { get; set; }
-        [NotMapped]
         public virtual Campaign? Campaign { get; set; }
-        [NotMapped]
         public virtual Donor? Donor { get; set; }
     }
 }

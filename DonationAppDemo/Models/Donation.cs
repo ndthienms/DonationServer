@@ -15,11 +15,8 @@ namespace DonationAppDemo.Models
         public string? PaymentTransactionId { get; set; }
         public string? PaymentToken { get; set; }
         public string? PaymentResponse { get; set; }
-        [NotMapped]
         public virtual Donor? Donor { get; set; }
-        [NotMapped]
         public virtual Campaign? Campaign { get; set; }
-        [NotMapped]
         public virtual PaymentMethod? PaymentMethod { get; set; }
     }
 }

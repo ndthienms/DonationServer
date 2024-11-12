@@ -15,11 +15,8 @@ namespace DonationAppDemo.Models
         public DateTime? UpdatedDate { get; set; }
         public int? UpdatedBy { get; set;}
         public bool? Disabled { get; set; } //if account signed up organiser role -> disabled == true (waiting for acceptance)
-        [NotMapped]
         public ICollection<Admin>? Admins { get; set; }
-        [NotMapped]
         public ICollection<Organiser>? Organisers { get; set; }
-        [NotMapped]
         public ICollection<Donor>? Donors { get; set; }
     }
 }

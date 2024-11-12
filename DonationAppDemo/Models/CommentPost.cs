@@ -9,7 +9,6 @@ namespace DonationAppDemo.Models
         public int? UserId { get; set; }
         public string? UserRole { get; set; }
         public int? PostId { get; set; }
-        [NotMapped]
         public virtual Post? Post { get; set; }
         [NotMapped]
         public virtual Admin? Admin { get; set; }
@@ -17,7 +16,6 @@ namespace DonationAppDemo.Models
         public virtual Organiser? Organiser { get; set; }
         [NotMapped]
         public virtual Donor? Donor { get; set; }
-        [NotMapped]
         public ICollection<ImageCommentPost>? ImageCommentPosts { get; set; }
     }
 }

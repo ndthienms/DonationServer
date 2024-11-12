@@ -8,7 +8,6 @@ namespace DonationAppDemo.Models
         public string? ImageSrc { get; set; }
         public string? ImageSrcPublicId { get; set; }
         public int? PostId { get; set; }
-        [NotMapped]
         public virtual Post? Post { get; set; }
     }
 }

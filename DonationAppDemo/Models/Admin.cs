@@ -15,13 +15,10 @@ namespace DonationAppDemo.Models
         public DateTime? UpdatedDate { get; set; }
         public int? UpdatedBy { get; set; }
         public string? AccountId { get; set; }
-        [NotMapped]
         public virtual Account? Account { get; set; }
-        [NotMapped]
         public ICollection<Transference>? Transferences { get; set; }
         [NotMapped]
         public ICollection<Notification>? Notifications { get; set; }
-        [NotMapped]
         public ICollection<Post>? Posts { get; set; }
         [NotMapped]
         public ICollection<CommentPost>? CommentPosts { get; set; }

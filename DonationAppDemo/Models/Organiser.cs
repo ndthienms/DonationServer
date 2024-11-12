@@ -26,11 +26,8 @@ namespace DonationAppDemo.Models
         public DateTime? UpdatedDate { get; set; }
         public int? UpdatedBy { get; set; }
         public string? AccountId { get; set; }
-        [NotMapped]
         public virtual Account? Account { get; set; }
-        [NotMapped]
         public ICollection<Campaign>? Campaigns { get; set; }
-        [NotMapped]
         public ICollection<Expense>? Expenses { get; set; }
         [NotMapped]
         public ICollection<Notification>? Notifications { get; set; }

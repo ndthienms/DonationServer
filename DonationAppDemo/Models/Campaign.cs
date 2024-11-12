@@ -24,21 +24,13 @@ namespace DonationAppDemo.Models
         public DateTime? UpdatedDate { get; set; }
         public int? UpdatedBy { get; set; }
         public bool? Disabled { get; set; }
-        [NotMapped]
         public virtual StatusCampaign? StatusCampaign { get; set; }
-        [NotMapped]
         public virtual Organiser? Organiser { get; set; }
-        [NotMapped]
         public ICollection<ImageCampaign>? ImageCampaigns { get; set; }
-        [NotMapped]
         public ICollection<RateCampaign>? RateCampaigns { get; set;}
-        [NotMapped]
         public ICollection<Donation>? Donations { get; set; }
-        [NotMapped]
         public ICollection<Expense>? Expenses { get; set; }
-        [NotMapped]
         public ICollection<Transference>? Transferences { get; set; }
-        [NotMapped]
         public ICollection<CampaignParticipant>? CampaignParticipants { get; set; }
     }
 }
