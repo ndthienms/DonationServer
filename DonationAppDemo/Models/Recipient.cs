@@ -19,6 +19,7 @@ namespace DonationAppDemo.Models
         public int? UpdatedBy { get; set; }
         public string? AccountId { get; set; }
         public virtual Account? Account { get; set; }
+        public ICollection<Campaign>? Campaigns { get; set; }
         [NotMapped]
         public ICollection<Notification>? Notifications { get; set; }
         [NotMapped]

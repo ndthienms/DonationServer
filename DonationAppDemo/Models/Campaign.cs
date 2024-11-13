@@ -19,6 +19,8 @@ namespace DonationAppDemo.Models
         public string? CoverSrc { get; set; }
         public string? CoverSrcPublicId { get; set; }
         public int? OrganiserId { get; set; }
+        public int? RecipientId { get; set; }
+        public bool? Received { get; set; }
         public DateTime? CreatedDate { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime? UpdatedDate { get; set; }
@@ -26,6 +28,7 @@ namespace DonationAppDemo.Models
         public bool? Disabled { get; set; }
         public virtual StatusCampaign? StatusCampaign { get; set; }
         public virtual Organiser? Organiser { get; set; }
+        public virtual Recipient? Recipient { get; set; }
         public ICollection<ImageCampaign>? ImageCampaigns { get; set; }
         public ICollection<RateCampaign>? RateCampaigns { get; set;}
         public ICollection<Donation>? Donations { get; set; }
