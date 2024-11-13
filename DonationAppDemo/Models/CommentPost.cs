@@ -16,6 +16,8 @@ namespace DonationAppDemo.Models
         public virtual Organiser? Organiser { get; set; }
         [NotMapped]
         public virtual Donor? Donor { get; set; }
+        [NotMapped]
+        public virtual Recipient? Recipient { get; set; }
         public ICollection<ImageCommentPost>? ImageCommentPosts { get; set; }
     }
 }

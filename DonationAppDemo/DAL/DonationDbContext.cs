@@ -30,6 +30,7 @@ namespace DonationAppDemo.DAL
         public virtual DbSet<Post> Post { get; set; } = null!;
         public virtual DbSet<RateCampaign> RateCampaign { get; set; } = null!;
         public virtual DbSet<StatusCampaign> StatusCampaign { get; set; } = null!;
+        public virtual DbSet<Recipient> Recipient { get; set; } = null!;
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

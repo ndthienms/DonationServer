@@ -22,5 +22,7 @@ namespace DonationAppDemo.Models
         public virtual Organiser? ToOrganiser { get; set; }
         [NotMapped]
         public virtual Donor? ToDonor { get; set; }
+        [NotMapped]
+        public virtual Recipient? ToRecipient { get; set; }
     }
 }
