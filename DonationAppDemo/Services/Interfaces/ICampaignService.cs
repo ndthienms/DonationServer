@@ -5,14 +5,17 @@ namespace DonationAppDemo.Services.Interfaces
 {
     public interface ICampaignService
     {
-        Task<Campaign> CreateCampaign(CampaignDto campaignDto);
-        Task<Campaign?> Get(int campaignId);
-        Task<bool> DeleteCampaign(CampaignDto campaignDto);
-        Task<RateCampaign> RateCampaign(RateCampaignDto rateCampaignDto);
-        Task<List<ImageCampaign>> AddListImageCampaign(List<ImageCampaignDto> listImageCampaignDto);
-        Task<Campaign> UpdateCampaign(CampaignDto campaignDto);
-        Task<bool> ChangeStatusCampaign(int campaignId, int statusId);
-        Task<RateCampaign> UpdateRateCampaign(RateCampaignDto rateCampaignDto);
-        Task<bool> RemoveListImageCampaign(List<ImageCampaignDto> listImageCampaignDto);
+        Task<List<CampaignShortADto>?> GetListByAdmin(int pageIndex);
+        Task<List<CampaignShortADto>?> GetSearchedListByAdmin(int pageIndex, CampaignSearchADto search);
+        Task<bool> UpdateDisabledCampaign(int campaignId, bool disabled);
+        //Task<Campaign> CreateCampaign(CampaignDto campaignDto);
+        //Task<Campaign?> Get(int campaignId);
+        //Task<bool> DeleteCampaign(CampaignDto campaignDto);
+        //Task<RateCampaign> RateCampaign(RateCampaignDto rateCampaignDto);
+        //Task<List<ImageCampaign>> AddListImageCampaign(List<ImageCampaignDto> listImageCampaignDto);
+        //Task<Campaign> UpdateCampaign(CampaignDto campaignDto);
+        //Task<bool> ChangeStatusCampaign(int campaignId, int statusId);
+        //Task<RateCampaign> UpdateRateCampaign(RateCampaignDto rateCampaignDto);
+        //Task<bool> RemoveListImageCampaign(List<ImageCampaignDto> listImageCampaignDto);
     }
 }

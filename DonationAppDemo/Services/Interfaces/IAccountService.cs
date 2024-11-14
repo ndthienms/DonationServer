@@ -13,6 +13,7 @@ namespace DonationAppDemo.Services.Interfaces
         Task<OrganiserDto> AddOrganiserAccount(SignUpOrganiserDto signUpOrganiserDto); // admin
         Task<DonorDto> AddDonorAccount(SignUpDonorDto signUpDonorDto); // admin
         Task<AdminDto> AddAdminAccount(SignUpAdminDto signUpAdminDto); // admin
+        Task<RecipientDto> AddRecipientAcccount(SignUpRecipientDto signUpRecipientDto); // admin
         Task<bool> DeleteUncensorOrganiserAccount(string phoneNum, int organiserId); // admin
     }
 }

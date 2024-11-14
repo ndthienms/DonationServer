@@ -1,7 +1,9 @@
 ﻿using DonationAppDemo.DAL.Interfaces;
 using DonationAppDemo.DTOs;
+using DonationAppDemo.Helper;
 using DonationAppDemo.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 namespace DonationAppDemo.DAL
 {
@@ -12,79 +14,184 @@ namespace DonationAppDemo.DAL
         {
             _context = context;
         }
-
-        public async Task<Campaign> Add(Campaign campaign)
+        public async Task<List<CampaignShortADto>?> GetListByAdmin(int pageIndex)
         {
-            _context.Campaign.Add(campaign);
-            await _context.SaveChangesAsync();
-            return campaign;
+            var campaigns = await _context.Campaign
+                .Skip((pageIndex - 1) * 20)
+                .Take(20)
+                .GroupJoin(_context.CampaignStatistics,
+                    campaign => campaign.Id,
+                    statistics => statistics.CampaignId,
+                    (campaign, statistics) => new { campaign, statistics })
+                .SelectMany(x => x.statistics.DefaultIfEmpty(),
+                    (x, statistics) => new { x.campaign, statistics })
+                .GroupJoin(_context.Organiser,
+                    combined => combined.campaign.OrganiserId,
+                    organiser => organiser.Id,
+                    (combined, organiser) => new { combined.campaign, combined.statistics, organiser })
+                .SelectMany(x => x.organiser.DefaultIfEmpty(),
+                    (x, organiser) => new { x.campaign, x.statistics, organiser })
+                .GroupJoin(_context.Recipient,
+                    combined => combined.campaign.RecipientId,
+                    recipient => recipient.Id,
+                    (combined, recipient) => new { combined.campaign, combined.statistics, combined.organiser, recipient })
+                .SelectMany(x => x.recipient.DefaultIfEmpty(),
+                    (x, recipient) => new { x.campaign, x.statistics, x.organiser, recipient })
+                //.OrderByDescending(x => x.campaign.CreatedDate)
+                .Select(x => new CampaignShortADto
+                {
+                    Id = x.campaign.Id,
+                    Title = x.campaign.Title,
+                    //Target = x.campaign.Target,
+                    StartDate = x.campaign.StartDate == null ? "?" : x.campaign.StartDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                    EndDate = x.campaign.EndDate == null ? "?" : x.campaign.EndDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                    City = x.campaign.City,
+                    ReceivedTotal = x.statistics.TotalDonationAmount,
+                    SpentTotal = x.statistics.TotalExpendedAmount,
+                    Disabled = x.campaign.Disabled == false ? "Disabled" : "Active",
+                    OrganiserId = x.organiser.Id,
+                    OrganiserName = x.organiser.Name,
+                    RecipientId = x.recipient.Id,
+                    RecipientName = x.recipient.Name,
+                    Received = x.campaign.Received == false ? "Not Received" : "Received"
+                })
+                .ToListAsync();
+            return campaigns;
         }
-        public async Task<Campaign?> Get(int campaignId)
+        public async Task<List<CampaignShortADto>?> GetSearchedListByAdmin(int pageIndex, CampaignSearchADto search)
+        {
+            var campaigns = await _context.Campaign
+                .GroupJoin(_context.CampaignStatistics,
+                    campaign => campaign.Id,
+                    statistics => statistics.CampaignId,
+                    (campaign, statistics) => new { campaign, statistics })
+                .SelectMany(x => x.statistics.DefaultIfEmpty(),
+                    (x, statistics) => new { x.campaign, statistics })
+                .GroupJoin(_context.Organiser,
+                    combined => combined.campaign.OrganiserId,
+                    organiser => organiser.Id,
+                    (combined, organiser) => new { combined.campaign, combined.statistics, organiser })
+                .SelectMany(x => x.organiser.DefaultIfEmpty(),
+                    (x, organiser) => new { x.campaign, x.statistics, organiser })
+                .GroupJoin(_context.Recipient,
+                    combined => combined.campaign.RecipientId,
+                    recipient => recipient.Id,
+                    (combined, recipient) => new { combined.campaign, combined.statistics, combined.organiser, recipient })
+                .SelectMany(x => x.recipient.DefaultIfEmpty(),
+                    (x, recipient) => new { x.campaign, x.statistics, x.organiser, recipient })
+                .Where(x => (x.campaign.Id.ToString() == search.Campaign || (x.campaign.NormalizedTitle != null && x.campaign.NormalizedTitle.Contains(search.Campaign))) &&
+                    (x.organiser.Id.ToString() == search.Organiser || (x.organiser.NormalizedName != null && x.organiser.NormalizedName.Contains(search.Organiser))) &&
+                    ((search.StartDate == "" || x.campaign.StartDate.Value.Date >= DateTime.Parse(search.StartDate).Date) && (search.EndDate == "" || x.campaign.EndDate.Value.Date <= DateTime.Parse(search.EndDate).Date)) &&
+                    (x.campaign.City != null && x.campaign.City.Contains(search.City)))
+                .Skip((pageIndex - 1) * 20)
+                .Take(20)
+                .OrderByDescending(x => x.campaign.CreatedDate)
+                .Select(x => new CampaignShortADto
+                {
+                    Id = x.campaign.Id,
+                    Title = x.campaign.Title,
+                    StartDate = x.campaign.StartDate == null ? "?" : x.campaign.StartDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                    EndDate = x.campaign.EndDate == null ? "?" : x.campaign.EndDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                    City = x.campaign.City,
+                    ReceivedTotal = x.statistics.TotalDonationAmount,
+                    SpentTotal = x.statistics.TotalExpendedAmount,
+                    Disabled = x.campaign.Disabled == false ? "Active" : "Disabled",
+                    OrganiserId = x.organiser.Id,
+                    OrganiserName = x.organiser.Name,
+                    RecipientId = x.recipient.Id,
+                    RecipientName = x.recipient.Name,
+                    Received = x.campaign.Received == false ? "Unreceived" : "Received"
+                })
+                .ToListAsync();
+            return campaigns;
+        }
+        public async Task<bool> UpdateDisabledCampaign(int campaignId, bool disabled)
         {
             var campaign = await _context.Campaign.Where(x => x.Id == campaignId).FirstOrDefaultAsync();
-            return campaign;
-        }
-        public async Task<Campaign> Update(CampaignDto campaignDto)
-        {
-            var campaign = await _context.Campaign.Where(x => x.Id == campaignDto.Id).FirstOrDefaultAsync();
             if (campaign == null)
             {
-                throw new KeyNotFoundException("Campaign not found");
+                throw new Exception($"Not found campaign id {campaignId}");
             }
-            campaign.Title = campaignDto.Title;
-            campaign.Target = campaignDto.Target;
-            campaign.Description = campaignDto.Description;
-            campaign.Address = campaignDto.Address;
-            campaign.TargetAmount = campaignDto.TargetAmount;
-            campaign.UpdatedDate = DateTime.Now;
+
+            campaign.Disabled = disabled;
+
             _context.Campaign.Update(campaign);
             await _context.SaveChangesAsync();
-            return campaign;
-        }
-
-        public async Task<bool> Remove(int campaignId)
-        {
-            var hasDonations = await (
-                from cp in _context.Campaign
-                join dt in _context.Donation
-                on cp.Id equals dt.CampaignId
-                where cp.Id == campaignId
-                select dt.Id
-                ).AnyAsync();
-            if (hasDonations) return false;
-            /*var campaign = await _context.Campaign.Where(x => x.Id == campaignId).FirstOrDefaultAsync();
-            if (campaign == null)
-            {
-                return false;
-            }
-            var hasDonations = await _context.Donation.AnyAsync(d => d.CampaignId == campaignId);
-
-            if (hasDonations)
-            {
-                //Check if Campaign existed in the Donation table
-                return false;
-            }*/
-            var campaign = await _context.Campaign.Where(x => x.Id == campaignId).FirstOrDefaultAsync();
-            if (campaign == null)
-            {
-                return false;
-            }
-            _context.Campaign.Remove(campaign);
-            await _context.SaveChangesAsync();
             return true;
         }
 
-        public async Task<bool> ChangeStatus(int campaignId, int statusId)
-        {
-            var campaign = await _context.Campaign.Where(x => x.Id == campaignId).FirstOrDefaultAsync();
-            if (campaign == null)
-            {
-                return false;
-            }
-            //set status campaign Id to value of "Finished"
-            campaign.StatusCampaign.Id = statusId;
-            await _context.SaveChangesAsync();
-            return true;
-        }
+        //public async Task<Campaign> Add(Campaign campaign)
+        //{
+        //    _context.Campaign.Add(campaign);
+        //    await _context.SaveChangesAsync();
+        //    return campaign;
+        //}
+        //public async Task<Campaign?> Get(int campaignId)
+        //{
+        //    var campaign = await _context.Campaign.Where(x => x.Id == campaignId).FirstOrDefaultAsync();
+        //    return campaign;
+        //}
+        //public async Task<Campaign> Update(CampaignDto campaignDto)
+        //{
+        //    var campaign = await _context.Campaign.Where(x => x.Id == campaignDto.Id).FirstOrDefaultAsync();
+        //    if (campaign == null)
+        //    {
+        //        throw new KeyNotFoundException("Campaign not found");
+        //    }
+        //    campaign.Title = campaignDto.Title;
+        //    campaign.Target = campaignDto.Target;
+        //    campaign.Description = campaignDto.Description;
+        //    campaign.Address = campaignDto.Address;
+        //    campaign.TargetAmount = campaignDto.TargetAmount;
+        //    campaign.UpdatedDate = DateTime.Now;
+        //    _context.Campaign.Update(campaign);
+        //    await _context.SaveChangesAsync();
+        //    return campaign;
+        //}
+
+        //public async Task<bool> Remove(int campaignId)
+        //{
+        //    var hasDonations = await (
+        //        from cp in _context.Campaign
+        //        join dt in _context.Donation
+        //        on cp.Id equals dt.CampaignId
+        //        where cp.Id == campaignId
+        //        select dt.Id
+        //        ).AnyAsync();
+        //    if (hasDonations) return false;
+        //    /*var campaign = await _context.Campaign.Where(x => x.Id == campaignId).FirstOrDefaultAsync();
+        //    if (campaign == null)
+        //    {
+        //        return false;
+        //    }
+        //    var hasDonations = await _context.Donation.AnyAsync(d => d.CampaignId == campaignId);
+
+        //    if (hasDonations)
+        //    {
+        //        //Check if Campaign existed in the Donation table
+        //        return false;
+        //    }*/
+        //    var campaign = await _context.Campaign.Where(x => x.Id == campaignId).FirstOrDefaultAsync();
+        //    if (campaign == null)
+        //    {
+        //        return false;
+        //    }
+        //    _context.Campaign.Remove(campaign);
+        //    await _context.SaveChangesAsync();
+        //    return true;
+        //}
+
+        //public async Task<bool> ChangeStatus(int campaignId, int statusId)
+        //{
+        //    var campaign = await _context.Campaign.Where(x => x.Id == campaignId).FirstOrDefaultAsync();
+        //    if (campaign == null)
+        //    {
+        //        return false;
+        //    }
+        //    //set status campaign Id to value of "Finished"
+        //    campaign.StatusCampaign.Id = statusId;
+        //    await _context.SaveChangesAsync();
+        //    return true;
+        //}
     }
 }

@@ -18,6 +18,59 @@ namespace DonationAppDemo.Controllers
             _campaignService = campaignService;
         }
 
+        [HttpGet]
+        [Route("GetListByAdmin")]
+        public async Task<IActionResult> GetListByAdmin(int pageIndex)
+        {
+            try
+            {
+                var result = await _campaignService.GetListByAdmin(pageIndex);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("GetSearchedListByAdmin/{pageIndex}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]
+        public async Task<IActionResult> GetSearchedListByAdmin([FromRoute] int pageIndex, [FromBody] CampaignSearchADto search)
+        {
+            try
+            {
+                var result = await _campaignService.GetSearchedListByAdmin(pageIndex, search);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("UpdateDisabledCampaign/{campaignId}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]
+        public async Task<IActionResult> UpdateDisabledCampaign([FromRoute] int campaignId, [FromBody] bool disabled)
+        {
+            try
+            {
+                var result = await _campaignService.UpdateDisabledCampaign(campaignId, disabled);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        /*private readonly ICampaignService _campaignService;
+
+        public CampaignController(ICampaignService campaignService)
+        {
+            _campaignService = campaignService;
+        }
+
         //CAMPAIGN
         [HttpGet]
         [Route("Get/{campaignId}")]
@@ -161,6 +214,6 @@ namespace DonationAppDemo.Controllers
             {
                 return BadRequest(ex.Message);
             }
-        }
+        }*/
     }
 }

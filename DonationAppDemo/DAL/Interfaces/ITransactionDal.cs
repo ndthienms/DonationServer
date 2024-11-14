@@ -9,9 +9,10 @@ namespace DonationAppDemo.DAL.Interfaces
         Task<bool> BecomeOrganiser(string phoneNum, string role, bool disabled, OrganiserDto organiserDto, string? certificationPublicId);
         Task<bool> DeleteUncensoredOrganiser(string phoneNum, int organiserId);
         Task<bool> SignUpDonor(AccountDto accountDto, DonorDto donorDto);
+        Task<bool> SignUpRecipient(AccountDto accountDto, RecipientDto recipientDto);
         Task<bool> BecomeDonor(string phoneNum, string role, bool disabled, DonorDto donorDto);
         Task<bool> AccountAdmin(AccountDto accountDto, AdminDto adminDto);
         Task<CampaignStatistics?> AddDonation(PaymentResponseDto paymentResponseDto);
-        Task<bool> CampaignRateImage(CampaignDto campaignDto);
+        //Task<bool> CampaignRateImage(CampaignDto campaignDto);
     }
 }

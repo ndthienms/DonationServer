@@ -7,7 +7,7 @@ namespace DonationAppDemo.DAL
 {
     public class RateCampaignDal: IRateCampaignDal
     {
-        private readonly DonationDbContext _context;
+        /*private readonly DonationDbContext _context;
         public RateCampaignDal(DonationDbContext context)
         {
             _context = context;
@@ -73,6 +73,6 @@ namespace DonationAppDemo.DAL
             return await _context.RateCampaign
                                     .Where(x => x.CampaignId == campaignId)
                                     .ToListAsync();
-        }
+        }*/
     }
 }

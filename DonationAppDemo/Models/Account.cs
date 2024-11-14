@@ -9,12 +9,12 @@ namespace DonationAppDemo.Models
         public string PhoneNum { get; set; }
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
-        public string Role { get; set; } //admin, donor, organiser
+        public string Role { get; set; } //admin, donor, organiser, recipient
         public DateTime? CreatedDate { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public int? UpdatedBy { get; set;}
-        public bool? Disabled { get; set; } //if account signed up organiser role -> disabled == true (waiting for acceptance)
+        public bool? Disabled { get; set; }
         public ICollection<Admin>? Admins { get; set; }
         public ICollection<Organiser>? Organisers { get; set; }
         public ICollection<Donor>? Donors { get; set; }

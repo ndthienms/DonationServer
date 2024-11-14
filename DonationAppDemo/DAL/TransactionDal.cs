@@ -11,11 +11,12 @@ namespace DonationAppDemo.DAL
         private readonly IAdminDal _adminDal;
         private readonly IDonorDal _donorDal;
         private readonly IOrganiserDal _organiserDal;
+        private readonly IRecipientDal _recipientDal;
         private readonly IDonationDal _donationDal;
         private readonly ICampaignStatisticsDal _campaignStatisticsDal;
-        private readonly ICampaignDal _campaignDal;
+        /*private readonly ICampaignDal _campaignDal;
         private readonly IImageCampaignDal _imageCampaignDal;
-        private readonly IRateCampaignDal _rateCampaignDal;
+        private readonly IRateCampaignDal _rateCampaignDal;*/
 
 
         public TransactionDal(DonationDbContext context,
@@ -24,13 +25,15 @@ namespace DonationAppDemo.DAL
             IAdminDal adminDal,
             IDonorDal donorDal,
             IOrganiserDal organiserDal,
+            IRecipientDal recipientDal,
             // Payment
             IDonationDal donationDal,
-            ICampaignStatisticsDal campaignStatisticsDal,
+            ICampaignStatisticsDal campaignStatisticsDal
             // Campaign
-            ICampaignDal campaignDal,
+            /*ICampaignDal campaignDal,
             IImageCampaignDal imageCampaignDal,
-            IRateCampaignDal rateCampaignDal)
+            IRateCampaignDal rateCampaignDal*/
+            )
         {
             _context = context;
             // Account
@@ -38,12 +41,13 @@ namespace DonationAppDemo.DAL
             _adminDal = adminDal;
             _donorDal = donorDal;
             _organiserDal = organiserDal;
+            _recipientDal = recipientDal;
             _donationDal = donationDal;
             _campaignStatisticsDal = campaignStatisticsDal;
             // Campaign
-            _campaignDal = campaignDal;
+            /*_campaignDal = campaignDal;
             _imageCampaignDal = imageCampaignDal;
-            _rateCampaignDal = rateCampaignDal;
+            _rateCampaignDal = rateCampaignDal;*/
         }
 
         // Account + Organiser
@@ -166,6 +170,27 @@ namespace DonationAppDemo.DAL
             }
         }
 
+        // Account + Recipient
+        public async Task<bool> SignUpRecipient(AccountDto accountDto, RecipientDto recipientDto)
+        {
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    await _accountDal.Add(accountDto);
+                    await _recipientDal.Add(recipientDto);
+
+                    transaction.Commit();
+                    return true;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    return false;
+                }
+            }
+        }
+
         // Donation + CampaignStatistics
         public async Task<CampaignStatistics?> AddDonation(PaymentResponseDto paymentResponseDto)
         {
@@ -188,7 +213,7 @@ namespace DonationAppDemo.DAL
         }
 
         //Delete Campaign
-        public async Task<bool> CampaignRateImage(CampaignDto campaignDto)
+        /*public async Task<bool> CampaignRateImage(CampaignDto campaignDto)
         {
             using(var transaction = _context.Database.BeginTransaction())
             {
@@ -207,6 +232,6 @@ namespace DonationAppDemo.DAL
                 }
 
             }
-        }
+        }*/
     }
 }

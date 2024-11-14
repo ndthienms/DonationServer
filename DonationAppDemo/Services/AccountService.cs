@@ -247,6 +247,56 @@ namespace DonationAppDemo.Services
             }
             return adminDto;
         }
+        public async Task<RecipientDto> AddRecipientAcccount(SignUpRecipientDto signUpRecipientDto)
+        {
+            // Check existed account
+            var user = await _accountDal.Get(signUpRecipientDto.PhoneNum);
+            if (user != null)
+            {
+                throw new Exception("TThis account is existed");
+            }
+
+            // Hash password
+            var hashSaltResult = Helper.DataEncryptionExtensions.HMACSHA512(signUpRecipientDto.Password);
+
+            // Convert type data
+            bool disabled = false;
+            DateTime dob = DateTime.Parse(signUpRecipientDto.Dob == null ? throw new Exception("Date of birth is required") : signUpRecipientDto.Dob);
+
+            if (signUpRecipientDto.Disabled == "1")
+            {
+                disabled = true;
+            }
+
+            // DonorDto
+            var recipientDto = new RecipientDto()
+            {
+                PhoneNum = signUpRecipientDto.PhoneNum,
+                Name = signUpRecipientDto.Name,
+                Gender = signUpRecipientDto.Gender,
+                Dob = dob,
+                Email = signUpRecipientDto.Email,
+                Address = signUpRecipientDto.Address
+            };
+
+            // AccountDto
+            var accountDto = new AccountDto()
+            {
+                PhoneNum = signUpRecipientDto.PhoneNum,
+                PasswordHash = hashSaltResult.hashedCode,
+                PasswordSalt = hashSaltResult.keyCode,
+                Role = "recipient",
+                Disabled = disabled
+            };
+
+            // Add to account and organiser table in db
+            var transactionResult = await _transactionDal.SignUpRecipient(accountDto, recipientDto);
+            if (transactionResult == false)
+            {
+                throw new Exception("Sign up failed");
+            }
+            return recipientDto;
+        }
 
         public async Task<bool> DeleteUncensorOrganiserAccount(string phoneNum, int organiserId)
         {

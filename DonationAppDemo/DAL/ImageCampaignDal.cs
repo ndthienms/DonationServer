@@ -8,7 +8,7 @@ namespace DonationAppDemo.DAL
 {
     public class ImageCampaignDal : IImageCampaignDal
     {
-        private readonly DonationDbContext _context;
+        /*private readonly DonationDbContext _context;
 
         public ImageCampaignDal(DonationDbContext context)
         {
@@ -17,7 +17,7 @@ namespace DonationAppDemo.DAL
 
         public async Task<List<ImageCampaign>> AddImages(List<ImageCampaign> imageCamapaigns)
         {
-            foreach(var imageCampaign in imageCamapaigns)
+            foreach (var imageCampaign in imageCamapaigns)
             {
                 _context.Add(imageCampaign);
             }
@@ -56,10 +56,10 @@ namespace DonationAppDemo.DAL
             {
                 return false;
             }
-            foreach(var imageDto in imageCampaignDtos)
+            foreach (var imageDto in imageCampaignDtos)
             {
                 var image = await _context.ImageCampaign.Where(x => x.Id == imageDto.Id).FirstOrDefaultAsync();
-                if(image == null)
+                if (image == null)
                 {
                     return false;
                 }
@@ -84,6 +84,6 @@ namespace DonationAppDemo.DAL
             return await _context.ImageCampaign
                                     .Where(c => c.CampaignId == campaignId)
                                     .ToListAsync();
-        }
+        }*/
     }
 }

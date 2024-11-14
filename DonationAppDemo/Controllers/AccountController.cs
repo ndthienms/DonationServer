@@ -144,6 +144,22 @@ namespace DonationAppDemo.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("AddRecipientAcccount")]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]
+        public async Task<IActionResult> AddRecipientAcccount([FromBody] SignUpRecipientDto signUpRecipientDto)
+        {
+            try
+            {
+                var result = await _accountService.AddRecipientAcccount(signUpRecipientDto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpDelete]
         [Route("DeleteUncensorOrganiserAccount/{phoneNum}/{organiserId}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]

@@ -1,13 +1,65 @@
-﻿using DonationAppDemo.DAL.Interfaces;
+﻿using DonationAppDemo.DAL;
+using DonationAppDemo.DAL.Interfaces;
 using DonationAppDemo.DTOs;
+using DonationAppDemo.Helper;
 using DonationAppDemo.Models;
 using DonationAppDemo.Services.Interfaces;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace DonationAppDemo.Services
 {
     public class CampaignService : ICampaignService
     {
         private readonly ICampaignDal _campaignDal;
+
+        public CampaignService(ICampaignDal campaignDal)
+        {
+            _campaignDal = campaignDal;
+        }
+        public async Task<List<CampaignShortADto>?> GetListByAdmin(int pageIndex)
+        {
+            var campaigns = await _campaignDal.GetListByAdmin(pageIndex);
+            return campaigns;
+        }
+        public async Task<List<CampaignShortADto>?> GetSearchedListByAdmin(int pageIndex, CampaignSearchADto search)
+        {
+            // Convert type
+            if(search.StartDate != "" || search.EndDate != "")
+            {
+                if (search.EndDate == "" || search.StartDate == "")
+                {
+                    throw new Exception("Start date and End date can not be null if one of them is not null");
+                }
+            }
+            else
+            {
+                //search.StartDate = DateTime.MinValue.ToString();
+                //search.EndDate = DateTime.Now.ToString();
+
+                search.StartDate = "";
+                search.EndDate = "";
+            }
+
+            string? normalized = StringExtension.NormalizeString(search.Campaign);
+            search.Campaign = normalized == null ? "" : normalized;
+            normalized = StringExtension.NormalizeString(search.Organiser);
+            search.Organiser = normalized == null ? "" : normalized;
+
+            // Do search
+            var campaigns = await _campaignDal.GetSearchedListByAdmin(pageIndex, search);
+            return campaigns;
+        }
+        public async Task<bool> UpdateDisabledCampaign(int campaignId, bool disabled)
+        {
+            var result = await _campaignDal.UpdateDisabledCampaign(campaignId, disabled);
+            if (!result)
+            {
+                throw new Exception("Failed to update disabled campaign");
+            }
+
+            return result;
+        }
+        /*private readonly ICampaignDal _campaignDal;
         private readonly IRateCampaignDal _rateCampaignDal;
         private readonly IImageCampaignDal _imageCampaignDal;
         private readonly IUtilitiesService _utilitiesService;
@@ -169,6 +221,6 @@ namespace DonationAppDemo.Services
                 throw new Exception("Can not find the Image");
             }
             return result;
-        }
+        }*/
     }
 }
