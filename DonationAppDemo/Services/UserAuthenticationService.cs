@@ -1,4 +1,5 @@
 ﻿using CloudinaryDotNet.Actions;
+using DonationAppDemo.DAL;
 using DonationAppDemo.DAL.Interfaces;
 using DonationAppDemo.DTOs;
 using DonationAppDemo.Models;
@@ -17,6 +18,7 @@ namespace DonationAppDemo.Services
         private readonly IOrganiserDal _organiserDal;
         private readonly IDonorDal _donorDal;
         private readonly IAdminDal _adminDal;
+        private readonly IRecipientDal _recipientDal;
         private readonly ITransactionDal _transactionDal;
         private readonly IUtilitiesService _utilitiesService;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -26,6 +28,7 @@ namespace DonationAppDemo.Services
             IOrganiserDal organiserDal,
             IDonorDal donorDal,
             IAdminDal adminDal,
+            IRecipientDal recipientDal,
             ITransactionDal transactionDal,
             IUtilitiesService utilitiesService,
             IHttpContextAccessor httpContextAccessor,
@@ -35,6 +38,7 @@ namespace DonationAppDemo.Services
             _organiserDal = organiserDal;
             _donorDal = donorDal;
             _adminDal = adminDal;
+            _recipientDal = recipientDal;
             _transactionDal = transactionDal;
             _utilitiesService = utilitiesService;
             _httpContextAccessor = httpContextAccessor;
@@ -50,7 +54,8 @@ namespace DonationAppDemo.Services
             }
 
             // Send otp for phone number verification
-            return await _utilitiesService.TwilioSendCodeSms("+84" + phoneNum.Substring(1));
+            var result = await _utilitiesService.TwilioSendCodeSms("+84" + phoneNum.Substring(1));
+            return "Done";
         }
         public async Task<OrganiserDto> SignUpOrganiser(SignUpOrganiserDto signUpOrganiserDto)
         {
@@ -149,6 +154,50 @@ namespace DonationAppDemo.Services
             }
             return donorDto;
         }
+        public async Task<RecipientDto> SignUpRecipient(SignUpRecipientDto signUpRecipientDto)
+        {
+            // Verify otp
+            var verified = await _utilitiesService.TwilioVerifyCodeSms(signUpRecipientDto.Code, "+84" + signUpRecipientDto.PhoneNum.Substring(1));
+            if (verified == null || verified == false)
+            {
+                throw new Exception("Otp is not matched");
+            }
+
+            // Hash password
+            var hashSaltResult = Helper.DataEncryptionExtensions.HMACSHA512(signUpRecipientDto.Password);
+
+            // Convert type data
+            DateTime dob = DateTime.Parse(signUpRecipientDto.Dob == null ? throw new Exception("Date of birth is required") : signUpRecipientDto.Dob);
+
+            // DonorDto
+            var recipientDto = new RecipientDto()
+            {
+                PhoneNum = signUpRecipientDto.PhoneNum,
+                Name = signUpRecipientDto.Name,
+                Gender = signUpRecipientDto.Gender,
+                Dob = dob,
+                Email = signUpRecipientDto.Email,
+                Address = signUpRecipientDto.Address
+            };
+
+            // AccountDto
+            var accountDto = new AccountDto()
+            {
+                PhoneNum = signUpRecipientDto.PhoneNum,
+                PasswordHash = hashSaltResult.hashedCode,
+                PasswordSalt = hashSaltResult.keyCode,
+                Role = "recipient",
+                Disabled = false
+            };
+
+            // Add to account and organiser table in db
+            var transactionResult = await _transactionDal.SignUpRecipient(accountDto, recipientDto);
+            if (transactionResult == false)
+            {
+                throw new Exception("Sign up failed");
+            }
+            return recipientDto;
+        }
         public async Task<string> SignIn(SignInDto signInDto)
         {
             // Check account condition
@@ -208,7 +257,7 @@ namespace DonationAppDemo.Services
                     new Claim(ClaimTypes.NameIdentifier, user.PhoneNum),
                     new Claim(ClaimTypes.Name, userInformation.Name),
                     new Claim(type: "Id", value: userInformation.Id.ToString()),
-                    new Claim(type: "AvaSrc", value: userInformation.AvaSrc != null ? userInformation.AvaSrc : "0"),
+                    new Claim(type: "AvaSrc", value: userInformation.AvaSrc != null ? userInformation.AvaSrc : ""),
                     new Claim(ClaimTypes.Role, signInDto.Role)
                 };
             }
@@ -222,6 +271,20 @@ namespace DonationAppDemo.Services
                     new Claim(ClaimTypes.NameIdentifier, user.PhoneNum),
                     new Claim(ClaimTypes.Name, userInformation.Name),
                     new Claim(type: "Id", value: userInformation.Id.ToString()),
+                    new Claim(ClaimTypes.Role, signInDto.Role)
+                };
+            }
+            else if (signInDto.Role == "recipient")
+            {
+                var userInformation = await _recipientDal.GetByPhoneNum(user.PhoneNum);
+
+                // Create claims
+                authClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.PhoneNum),
+                    new Claim(ClaimTypes.Name, userInformation.Name),
+                    new Claim(type: "Id", value: userInformation.Id.ToString()),
+                    new Claim(type: "AvaSrc", value: userInformation.AvaSrc != null ? userInformation.AvaSrc : "0"),
                     new Claim(ClaimTypes.Role, signInDto.Role)
                 };
             }

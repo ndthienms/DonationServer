@@ -37,7 +37,7 @@ namespace DonationAppDemo.Controllers
 
         [HttpPost]
         [Route("SignUpOrganiser")]
-        public async Task<IActionResult> SignUpOrganiser([FromBody]SignUpOrganiserDto signUpOrganiserDto)
+        public async Task<IActionResult> SignUpOrganiser([FromForm]SignUpOrganiserDto signUpOrganiserDto)
         {
             try
             {
@@ -57,6 +57,21 @@ namespace DonationAppDemo.Controllers
             try
             {
                 var result = await _userAuthenticationService.SignUpDonor(signUpDonorDto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("SignUpRecipient")]
+        public async Task<IActionResult> SignUpRecipient([FromBody] SignUpRecipientDto signUpRecipientDto)
+        {
+            try
+            {
+                var result = await _userAuthenticationService.SignUpRecipient(signUpRecipientDto);
                 return Ok(result);
             }
             catch (Exception ex)
