@@ -49,6 +49,34 @@ namespace DonationAppDemo.Services
             var campaigns = await _campaignDal.GetSearchedListByAdmin(pageIndex, search);
             return campaigns;
         }
+        public async Task<List<CampaignShortBDto>?> GetSearchedListByUser(int pageIndex, CampaignSearchADto search)
+        {
+            // Convert type
+            if (search.StartDate != "" || search.EndDate != "")
+            {
+                if (search.EndDate == "" || search.StartDate == "")
+                {
+                    throw new Exception("Start date and End date can not be null if one of them is not null");
+                }
+            }
+            else
+            {
+                //search.StartDate = DateTime.MinValue.ToString();
+                //search.EndDate = DateTime.Now.ToString();
+
+                search.StartDate = "";
+                search.EndDate = "";
+            }
+
+            string? normalized = StringExtension.NormalizeString(search.Campaign);
+            search.Campaign = normalized == null ? "" : normalized;
+            normalized = StringExtension.NormalizeString(search.Organiser);
+            search.Organiser = normalized == null ? "" : normalized;
+
+            // Do search
+            var campaigns = await _campaignDal.GetSearchedListByUser(pageIndex, search);
+            return campaigns;
+        }
         public async Task<bool> UpdateDisabledCampaign(int campaignId, bool disabled)
         {
             var result = await _campaignDal.UpdateDisabledCampaign(campaignId, disabled);

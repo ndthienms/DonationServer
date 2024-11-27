@@ -105,6 +105,54 @@ namespace DonationAppDemo.DAL
                 .ToListAsync();
             return campaigns;
         }
+        public async Task<List<CampaignShortBDto>?> GetSearchedListByUser(int pageIndex, CampaignSearchADto search)
+        {
+            var campaigns = await _context.Campaign
+                .GroupJoin(_context.StatusCampaign,
+                    campaign => campaign.StatusCampaignId,
+                    status => status.Id,
+                    (campaign, status) => new { campaign, status })
+                .SelectMany(x => x.status.DefaultIfEmpty(),
+                    (x, status) => new { x.campaign, status })
+                .GroupJoin(_context.Organiser,
+                    combined => combined.campaign.OrganiserId,
+                    organiser => organiser.Id,
+                    (combined, organiser) => new { combined.campaign, combined.status, organiser })
+                .SelectMany(x => x.organiser.DefaultIfEmpty(),
+                    (x, organiser) => new { x.campaign, x.status, organiser })
+                .GroupJoin(_context.Recipient,
+                    combined => combined.campaign.RecipientId,
+                    recipient => recipient.Id,
+                    (combined, recipient) => new { combined.campaign, combined.status, combined.organiser, recipient })
+                .SelectMany(x => x.recipient.DefaultIfEmpty(),
+                    (x, recipient) => new { x.campaign, x.status, x.organiser, recipient })
+                .Where(x => x.campaign.Disabled != false && (x.campaign.Id.ToString() == search.Campaign || (x.campaign.NormalizedTitle != null && x.campaign.NormalizedTitle.Contains(search.Campaign))) &&
+                    (x.organiser.Id.ToString() == search.Organiser || (x.organiser.NormalizedName != null && x.organiser.NormalizedName.Contains(search.Organiser))) &&
+                    ((search.StartDate == "" || x.campaign.StartDate.Value.Date >= DateTime.Parse(search.StartDate).Date) && (search.EndDate == "" || x.campaign.EndDate.Value.Date <= DateTime.Parse(search.EndDate).Date)) &&
+                    (x.campaign.City != null && x.campaign.City.Contains(search.City)))
+                .Skip((pageIndex - 1) * 20)
+                .Take(20)
+                .OrderByDescending(x => x.campaign.CreatedDate)
+                .Select(x => new CampaignShortBDto
+                {
+                    Id = x.campaign.Id,
+                    Title = x.campaign.Title,
+                    Target = x.campaign.Target,
+                    StartDate = x.campaign.StartDate == null ? "?" : x.campaign.StartDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                    EndDate = x.campaign.EndDate == null ? "?" : x.campaign.EndDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                    Address = x.campaign.Address + ", " + x.campaign.City,
+                    CoverSrc = x.campaign.CoverSrc,
+                    Status = x.status.Name,
+                    OrganiserId = x.organiser.Id,
+                    OrganiserName = x.organiser.Name,
+                    OrganiserAva = x.organiser.AvaSrc,
+                    RecipientId = x.recipient.Id,
+                    RecipientName = x.recipient.Name,
+                    Received = x.campaign.Received == false ? "Chưa nhận" : "Đã nhận"
+                })
+                .ToListAsync();
+            return campaigns;
+        }
         public async Task<bool> UpdateDisabledCampaign(int campaignId, bool disabled)
         {
             var campaign = await _context.Campaign.Where(x => x.Id == campaignId).FirstOrDefaultAsync();

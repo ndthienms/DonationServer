@@ -49,6 +49,21 @@ namespace DonationAppDemo.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("GetSearchedListByUser/{pageIndex}")]
+        public async Task<IActionResult> GetSearchedListByUser([FromRoute] int pageIndex, [FromBody] CampaignSearchADto search)
+        {
+            try
+            {
+                var result = await _campaignService.GetSearchedListByUser(pageIndex, search);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPut]
         [Route("UpdateDisabledCampaign/{campaignId}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]
