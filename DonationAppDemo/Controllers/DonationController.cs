@@ -58,6 +58,7 @@ namespace DonationAppDemo.Controllers
 
         [HttpPost]
         [Route("CreatePaymentUrl")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "donor")]
         public async Task<IActionResult> CreatePaymentUrl([FromBody]PaymentRequestDto request)
         {
             try
