@@ -152,11 +152,12 @@ namespace DonationAppDemo.Services
             //vnp_ResponseCode:Response code from VNPAY: 00: Thanh cong, Khac 00: Xem tai lieu
             //vnp_SecureHash: HmacSHA512 cua du lieu tra ve
 
+            string vnp_ResponseCode = vnpay.GetResponseData("vnp_ResponseCode");
             string vnp_date = vnpay.GetResponseData("vnp_PayDate");
-            long vnp_OrderId = Convert.ToInt64(vnpay.GetResponseData("vnp_TxnRef"));
+            //long vnp_OrderId = Convert.ToInt64(vnpay.GetResponseData("vnp_TxnRef"));
+            string vnp_OrderId = vnpay.GetResponseData("vnp_TxnRef");
             decimal vnp_Amount = Decimal.Parse(vnpay.GetResponseData("vnp_Amount")) / 100;
             long vnpay_TranId = Convert.ToInt64(vnpay.GetResponseData("vnp_TransactionNo"));
-            string vnp_ResponseCode = vnpay.GetResponseData("vnp_ResponseCode");
             //string vnp_TransactionStatus = vnpay.GetResponseData("vnp_TransactionStatus");
             string vnp_SecureHash = collections.FirstOrDefault(p => p.Key == "vnp_SecureHash").Value;
             string vnp_OrderInfo = vnpay.GetResponseData("vnp_OrderInfo");

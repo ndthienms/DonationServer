@@ -58,7 +58,7 @@ namespace DonationAppDemo.Controllers
 
         [HttpPost]
         [Route("CreatePaymentUrl")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "donor")]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "donor")]
         public async Task<IActionResult> CreatePaymentUrl([FromBody]PaymentRequestDto request)
         {
             try
@@ -73,7 +73,7 @@ namespace DonationAppDemo.Controllers
         }
 
         [HttpGet]
-        [Route("PaymentExcecute")]
+        [Route("{PaymentExcecute?}")]
         public async Task<IActionResult> PaymentExcecute()
         {
             try
@@ -82,11 +82,11 @@ namespace DonationAppDemo.Controllers
                 var result = await _donationService.PaymentExecute(Request.Query);
                 await _donationHubService.SendDonation(result);
 
-                return Redirect($"http://localhost:4200/paymentresult?200/{result}");
+                return Redirect($"http://localhost:4200/donation/200");
             }
             catch (Exception ex)
             {
-                return Redirect($"http://localhost:4200/paymentresult?400/{ex}");
+                return Redirect($"http://localhost:4200/donation/400");
             }
         }
     }
