@@ -21,6 +21,8 @@ namespace DonationAppDemo.Models
         public int? OrganiserId { get; set; }
         public int? RecipientId { get; set; }
         public bool? Received { get; set; }
+        public int? RatedByRecipient { get; set; }
+        public string? RatedContentByRecipient { get; set; }
         public DateTime? CreatedDate { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime? UpdatedDate { get; set; }
