@@ -8,6 +8,7 @@ namespace DonationAppDemo.Services.Interfaces
         Task<List<CampaignShortADto>?> GetListByAdmin(int pageIndex);
         Task<List<CampaignShortADto>?> GetSearchedListByAdmin(int pageIndex, CampaignSearchADto search);
         Task<List<CampaignShortBDto>?> GetSearchedListByUser(int pageIndex, CampaignSearchADto search);
+        Task<CampaignDetailBDto?> GetById(int campaignId);
         Task<bool> UpdateDisabledCampaign(int campaignId, bool disabled);
         //Task<Campaign> CreateCampaign(CampaignDto campaignDto);
         //Task<Campaign?> Get(int campaignId);

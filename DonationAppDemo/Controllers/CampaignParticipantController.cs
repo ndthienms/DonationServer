@@ -18,6 +18,21 @@ namespace DonationAppDemo.Controllers
             _campaignParticipantService = campaignParticipantService;
         }
 
+        [HttpGet]
+        [Route("CheckParticipated")]
+        public async Task<IActionResult> CheckParticipated(int donorId, int campaignId)
+        {
+            try
+            {
+                var result = await _campaignParticipantService.CheckParticipated(donorId, campaignId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPost]
         [Route("JoinCampaign")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "donor")]

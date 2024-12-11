@@ -64,6 +64,21 @@ namespace DonationAppDemo.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("GetById")]
+        public async Task<IActionResult> GetById(int campaignId)
+        {
+            try
+            {
+                var result = await _campaignService.GetById(campaignId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPut]
         [Route("UpdateDisabledCampaign/{campaignId}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]

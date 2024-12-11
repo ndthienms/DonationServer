@@ -13,7 +13,16 @@ namespace DonationAppDemo.DAL
         {
             _context = context;
         }
-        public async Task<List<int>?>GetAllDonorIdByCampaignId(int campaignId)
+        public async Task<bool>CheckParticipated(int donorId, int campaignId)
+        {
+            var result = await _context.CampaignParticipant.Where(x => x.CampaignId == campaignId && x.DonorId == donorId).FirstOrDefaultAsync();
+            if(result == null)
+            {
+                return false;
+            }
+            return true;
+        }
+        public async Task<List<int>?> GetAllDonorIdByCampaignId(int campaignId)
         {
             var userIds = await _context.CampaignParticipant.Where(x => x.CampaignId == campaignId).Select(x => x.DonorId).ToListAsync();
             return userIds;

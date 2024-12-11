@@ -74,6 +74,7 @@ builder.Services.AddTransient<IOrganiserService, OrganiserService>();
 builder.Services.AddTransient<IUserTokenService, UserTokenService>();
 builder.Services.AddTransient<IUtilitiesService, UtilitiesService>();
 builder.Services.AddTransient<ICampaignService, CampaignService>();
+builder.Services.AddTransient<ICampaignStatisticsService, CampaignStatisticsService>();
 builder.Services.AddTransient<ICampaignParticipantService, CampaignParticipantService>();
 builder.Services.AddTransient<IDonationService, DonationService>();
 builder.Services.AddTransient<IDonationHubService, DonationHubService>();

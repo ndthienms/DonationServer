@@ -21,6 +21,11 @@ namespace DonationAppDemo.Services
             var result = await _campaignParticipantDal.GetAllDonorIdByCampaignId(campaignId);
             return result;
         }
+        public async Task<bool> CheckParticipated(int donorId, int campaignId)
+        {
+            var result = await _campaignParticipantDal.CheckParticipated(donorId, campaignId);
+            return result;
+        }
         public async Task<bool> JoinCampaign(int campaignId)
         {
             // Get current user

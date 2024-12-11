@@ -77,6 +77,11 @@ namespace DonationAppDemo.Services
             var campaigns = await _campaignDal.GetSearchedListByUser(pageIndex, search);
             return campaigns;
         }
+        public async Task<CampaignDetailBDto?> GetById(int campaignId)
+        {
+            var campaign = await _campaignDal.GetById(campaignId);
+            return campaign;
+        }
         public async Task<bool> UpdateDisabledCampaign(int campaignId, bool disabled)
         {
             var result = await _campaignDal.UpdateDisabledCampaign(campaignId, disabled);

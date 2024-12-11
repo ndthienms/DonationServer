@@ -14,6 +14,11 @@ namespace DonationAppDemo.DAL
         {
             _context = context;
         }
+        public async Task<CampaignStatistics> GetById(int campaignId)
+        {
+            var result = await _context.CampaignStatistics.Where(x => x.CampaignId == campaignId).FirstOrDefaultAsync();
+            return result;
+        }
         public async Task<CampaignStatistics> Add(int campaignId, decimal total, string type)
         {
             var campaignStatistics = new CampaignStatistics();
