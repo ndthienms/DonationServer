@@ -8,6 +8,27 @@ namespace DonationAppDemo.DAL
 {
     public class ImageCampaignDal : IImageCampaignDal
     {
+        private readonly DonationDbContext _context;
+
+        public ImageCampaignDal(DonationDbContext context)
+        {
+            _context = context;
+        }
+
+        public async Task<List<ImageCampaignDto>?> GetAll(int pageIndex, int campaignId, int campaignStatusId)
+        {
+            var images = await _context.ImageCampaign
+                .Where(x => x.CampaignId == campaignId && x.StatusCampaignId == campaignStatusId)
+                .Skip((pageIndex - 1) * 8)
+                .Take(8)
+                .Select(x => new ImageCampaignDto
+                {
+                    Id = x.Id,
+                    ImageSrc = x.ImageSrc
+                })
+                .ToListAsync();
+            return images;
+        }
         /*private readonly DonationDbContext _context;
 
         public ImageCampaignDal(DonationDbContext context)

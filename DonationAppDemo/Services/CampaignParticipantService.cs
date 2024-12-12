@@ -21,9 +21,17 @@ namespace DonationAppDemo.Services
             var result = await _campaignParticipantDal.GetAllDonorIdByCampaignId(campaignId);
             return result;
         }
-        public async Task<bool> CheckParticipated(int donorId, int campaignId)
+        public async Task<bool> CheckParticipated(int campaignId)
         {
-            var result = await _campaignParticipantDal.CheckParticipated(donorId, campaignId);
+            // Get current user
+            var handler = new JwtSecurityTokenHandler();
+            string authHeader = _httpContextAccessor.HttpContext.Request.Headers["Authorization"];
+            authHeader = authHeader.Replace("Bearer ", "");
+            var jsonToken = handler.ReadToken(authHeader);
+            var tokenS = handler.ReadJwtToken(authHeader) as JwtSecurityToken;
+            var currentUserId = tokenS.Claims.First(claim => claim.Type == "Id").Value.ToString();
+
+            var result = await _campaignParticipantDal.CheckParticipated(Int32.Parse(currentUserId), campaignId);
             return result;
         }
         public async Task<bool> JoinCampaign(int campaignId)

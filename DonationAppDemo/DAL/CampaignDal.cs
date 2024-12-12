@@ -192,6 +192,7 @@ namespace DonationAppDemo.DAL
                     OrganiserAva = x.organiser.AvaSrc,
                     RecipientId = x.recipient.Id,
                     RecipientName = x.recipient.Name,
+                    RecipientAva = x.recipient.AvaSrc,
                     Received = x.campaign.Received == false ? "Chưa nhận" : "Đã nhận",
                     RatedByRecipient = x.campaign.RatedByRecipient,
                     RatedContentByRecipient = x.campaign.RatedContentByRecipient

@@ -17,6 +17,7 @@
         public string? OrganiserAva { get; set; }
         public int? RecipientId { get; set; }
         public string? RecipientName { get; set; }
+        public string? RecipientAva { get; set; }
         public string? Received { get; set; }
         public int? RatedByRecipient { get; set; }
         public string? RatedContentByRecipient { get; set; }

@@ -19,12 +19,12 @@ namespace DonationAppDemo.Controllers
         }
 
         [HttpGet]
-        [Route("CheckParticipated")]
-        public async Task<IActionResult> CheckParticipated(int donorId, int campaignId)
+        [Route("CheckParticipated/{campaignId}")]
+        public async Task<IActionResult> CheckParticipated([FromRoute] int campaignId)
         {
             try
             {
-                var result = await _campaignParticipantService.CheckParticipated(donorId, campaignId);
+                var result = await _campaignParticipantService.CheckParticipated(campaignId);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -34,18 +34,18 @@ namespace DonationAppDemo.Controllers
         }
 
         [HttpPost]
-        [Route("JoinCampaign")]
+        [Route("JoinCampaign/{campaignId}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "donor")]
-        public async Task<IActionResult> JoinCampaign([FromBody]int campaignId)
+        public async Task<IActionResult> JoinCampaign([FromRoute]int campaignId)
         {
             try
             {
                 var result = await _campaignParticipantService.JoinCampaign(campaignId);
-                return Ok(result);
+                return Ok(new { message = "Success", success = result });
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message, success = false });
             }
         }
 

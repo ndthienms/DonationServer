@@ -16,7 +16,7 @@
         public string? PaymentOrderId { get; set; } //order_token of zalopay
         public string? PaymentTransactionId { get; set; } //zp_trans_token of zalopay
         public string? PaymentToken { get; set; }
-        public DateTime? PaymentDate { get; set; } //yyyymmdd
+        public DateTime PaymentDate { get; set; } //yyyymmdd
         public decimal Amount { get; set; }
         public int UserId { get; set; }
         public int CampaignId { get; set; }

@@ -76,6 +76,7 @@ builder.Services.AddTransient<IUtilitiesService, UtilitiesService>();
 builder.Services.AddTransient<ICampaignService, CampaignService>();
 builder.Services.AddTransient<ICampaignStatisticsService, CampaignStatisticsService>();
 builder.Services.AddTransient<ICampaignParticipantService, CampaignParticipantService>();
+builder.Services.AddTransient<IImageCampaignService, ImageCampaignService>();
 builder.Services.AddTransient<IDonationService, DonationService>();
 builder.Services.AddTransient<IDonationHubService, DonationHubService>();
 builder.Services.AddTransient<INotificationService, NotificationService>();

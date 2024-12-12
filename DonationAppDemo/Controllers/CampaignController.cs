@@ -65,8 +65,8 @@ namespace DonationAppDemo.Controllers
         }
 
         [HttpGet]
-        [Route("GetById")]
-        public async Task<IActionResult> GetById(int campaignId)
+        [Route("GetById/{campaignId}")]
+        public async Task<IActionResult> GetById([FromRoute]int campaignId)
         {
             try
             {

@@ -22,7 +22,7 @@ namespace DonationAppDemo.Controllers
             _donationHubService = donationHubService;
         }
 
-        [HttpPost]
+        /*[HttpPost]
         [Route("GetListByCampaignId/{campaignId}")]
         public async Task<IActionResult> GetListByCampaignId([FromRoute]int campaignId, [FromBody]SearchDto searchDto)
         {
@@ -37,8 +37,25 @@ namespace DonationAppDemo.Controllers
             {
                 return BadRequest(ex);
             }
-        }
+        }*/
 
+        [HttpPost]
+        [Route("GetSearchedListByCampaignId/{campaignId}")]
+        public async Task<IActionResult> GetSearchedListByCampaignId([FromRoute] int campaignId, [FromBody] SearchDto searchDto)
+        {
+            try
+            {
+
+                var result = await _donationService.GetSearchedListByCampaignId(campaignId, searchDto);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+/*
         [HttpPost]
         [Route("GetListByDonorId")]
         public async Task<IActionResult> GetListByDonorId([FromBody] SearchDto searchDto)
@@ -54,7 +71,7 @@ namespace DonationAppDemo.Controllers
             {
                 return BadRequest(ex);
             }
-        }
+        }*/
 
         [HttpPost]
         [Route("CreatePaymentUrl")]

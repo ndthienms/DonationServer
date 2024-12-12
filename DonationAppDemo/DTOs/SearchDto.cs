@@ -2,9 +2,10 @@
 {
     public class SearchDto
     {
-        public DateTime? FromDate { get; set; }
-        public DateTime? ToDate { get; set;}
-        public string? Id { get; set; }
+        public string? FromDate { get; set; }
+        public string? ToDate { get; set;}
+        public string? Donor { get; set; }
+        public string? OrderBy { get; set; }
         public int PageIndex { get; set; }
     }
 }
