@@ -57,6 +57,11 @@ namespace DonationAppDemo.DAL
             var userInformation = await _context.Recipient.Where(x => x.AccountId == phoneNum).FirstOrDefaultAsync();
             return userInformation;
         }
+        public async Task<Recipient?> GetById(int id)
+        {
+            var userInformation = await _context.Recipient.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return userInformation;
+        }
         public async Task<Recipient> Add(RecipientDto recipientDto)
         {
             string? normalizedText = StringExtension.NormalizeString(recipientDto.Name);
