@@ -78,5 +78,15 @@ namespace DonationAppDemo.DAL
             await _context.SaveChangesAsync();
             return campaignStatistics;
         }
+        public async Task<CampaignStatistics> GetByCampaignIdAsync(int campaignId)
+        {
+            return await _context.CampaignStatistics.FirstOrDefaultAsync(cs => cs.CampaignId == campaignId);
+        }
+
+        public async Task UpdateAsync(CampaignStatistics campaignStatistics)
+        {
+            _context.CampaignStatistics.Update(campaignStatistics);
+            await _context.SaveChangesAsync();
+        }
     }
 }

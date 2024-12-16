@@ -64,6 +64,11 @@ builder.Services.AddTransient<IDonationDal, DonationDal>();
 builder.Services.AddTransient<ICampaignStatisticsDal, CampaignStatisticsDal>();
 builder.Services.AddTransient<INotificationDal, NotificationDal>();
 builder.Services.AddTransient<IRecipientDal, RecipientDal>();
+builder.Services.AddTransient<IExpenseDal, ExpenseDal>();
+builder.Services.AddTransient<ITransferenceDal, TransferenceDal>();
+builder.Services.AddTransient<IPostDal, PostDal>();
+builder.Services.AddTransient<IImagePostDal, ImagePostDal>();
+builder.Services.AddTransient<ICommentDal, CommentDal>();
 
 /*Service*/
 builder.Services.AddTransient<IUserAuthenticationService, UserAuthenticationService>();
@@ -79,6 +84,9 @@ builder.Services.AddTransient<IDonationService, DonationService>();
 builder.Services.AddTransient<IDonationHubService, DonationHubService>();
 builder.Services.AddTransient<INotificationService, NotificationService>();
 builder.Services.AddTransient<IRecipientService, RecipientService>();
+builder.Services.AddTransient<IExpenseService, ExpenseService>();
+builder.Services.AddTransient<ITransferenceService, TransferenceService>();
+builder.Services.AddTransient<IPostService, PostService>();
 
 // HttpContext
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
