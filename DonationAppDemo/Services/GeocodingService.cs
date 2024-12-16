@@ -32,7 +32,7 @@ namespace DonationAppDemo.Services
                     if (coordinates != null)
                     {
                         Console.WriteLine($"Coordinates for {location.Add_Campaign}: Lat={coordinates.Value.Latitude}, Lng={coordinates.Value.Longitude}");
-                        await InsertLocationAsync(location, coordinates.Value.Latitude, coordinates.Value.Longitude);                        
+                        await InsertLocationAsync(location, coordinates.Value.Latitude, coordinates.Value.Longitude);
                         processedCount++;
                     }
                     else

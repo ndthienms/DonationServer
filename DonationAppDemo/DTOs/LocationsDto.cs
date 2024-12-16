@@ -1,6 +1,6 @@
 ﻿namespace DonationAppDemo.DTOs
 {
-    public class Locations
+    public class LocationsDto
     {
         public int Id { get; set; }
         public string? Add_Campaign { get; set; }

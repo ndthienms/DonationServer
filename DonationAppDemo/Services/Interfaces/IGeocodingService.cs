@@ -1,4 +1,4 @@
-﻿using DonationAppDemo.DTOs;
+﻿using DonationAppDemo.Models;
 
 namespace DonationAppDemo.Services.Interfaces
 {
