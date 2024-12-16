@@ -373,7 +373,8 @@ namespace DonationAppDemo.Services
             };
 
             // Send a message to the device corresponding to the provided registration token
-            var response = await FirebaseMessaging.DefaultInstance.SendMulticastAsync(message);
+            //var response = await FirebaseMessaging.DefaultInstance.SendMulticastAsync(message);
+            var response = await FirebaseMessaging.DefaultInstance.SendEachForMulticastAsync(message);
             return response;
         }
     }

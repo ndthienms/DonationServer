@@ -302,8 +302,11 @@ namespace DonationAppDemo.DAL
             campaign.City = campaignCUDto.City;
             campaign.StatusCampaignId = campaignCUDto.StatusCampaignId;
             campaign.TargetAmount = campaignCUDto.TargetAmount;
-            campaign.CoverSrc = coverSrc;
-            campaign.CoverSrcPublicId = coverPublicId;
+            if(coverSrc != null)
+            {
+                campaign.CoverSrc = coverSrc;
+                campaign.CoverSrcPublicId = coverPublicId;
+            }
             campaign.OrganiserId = organiserId;
             campaign.RecipientId = campaignCUDto.RecipientId;
             campaign.UpdatedDate = DateTime.Now;
