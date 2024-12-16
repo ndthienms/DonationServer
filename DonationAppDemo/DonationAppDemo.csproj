@@ -7,9 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="demo\**" />
     <Compile Remove="Utilities\**" />
+    <Content Remove="demo\**" />
     <Content Remove="Utilities\**" />
+    <EmbeddedResource Remove="demo\**" />
     <EmbeddedResource Remove="Utilities\**" />
+    <None Remove="demo\**" />
     <None Remove="Utilities\**" />
   </ItemGroup>
 
@@ -33,10 +37,6 @@
     </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     <PackageReference Include="Twilio" Version="7.4.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="demo\" />
   </ItemGroup>
 
 </Project>

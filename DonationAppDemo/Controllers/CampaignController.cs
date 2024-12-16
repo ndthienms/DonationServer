@@ -97,7 +97,7 @@ namespace DonationAppDemo.Controllers
         [HttpPost]
         [Route("Add")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "organiser")]
-        public async Task<IActionResult> Add([FromBody] CampaignCUDto campaignCUDto)
+        public async Task<IActionResult> Add([FromForm] CampaignCUDto campaignCUDto)
         {
             try
             {
@@ -113,7 +113,7 @@ namespace DonationAppDemo.Controllers
         [HttpPut]
         [Route("Update/{campaignId}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "organiser")]
-        public async Task<IActionResult> Update([FromRoute] int campaignId, [FromBody] CampaignCUDto campaignCUDto)
+        public async Task<IActionResult> Update([FromRoute] int campaignId, [FromForm] CampaignCUDto campaignCUDto)
         {
             try
             {

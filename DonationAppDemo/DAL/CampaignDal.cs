@@ -155,7 +155,7 @@ namespace DonationAppDemo.DAL
                 .ToListAsync();
             return campaigns;
         }
-        public async Task<List<CampaignShortCDto>?> GetSearchedListByOrganiser(int pageIndex, CampaignSearchADto search)
+        public async Task<List<CampaignShortCDto>?> GetSearchedListByOrganiser(int pageIndex, CampaignSearchADto search, int organiserId)
         {
             var campaigns = await _context.Campaign
                 .GroupJoin(_context.StatusCampaign,
@@ -170,7 +170,8 @@ namespace DonationAppDemo.DAL
                     (combined, recipient) => new { combined.campaign, combined.status, recipient })
                 .SelectMany(x => x.recipient.DefaultIfEmpty(),
                     (x, recipient) => new { x.campaign, x.status, recipient })
-                .Where(x => (x.campaign.Id.ToString() == search.Campaign || (x.campaign.NormalizedTitle != null && x.campaign.NormalizedTitle.Contains(search.Campaign))) &&
+                .Where(x => x.campaign.OrganiserId == organiserId &&
+                    (x.campaign.Id.ToString() == search.Campaign || (x.campaign.NormalizedTitle != null && x.campaign.NormalizedTitle.Contains(search.Campaign))) &&
                     (x.recipient.Id.ToString() == search.User || (x.recipient.NormalizedName != null && x.recipient.NormalizedName.Contains(search.User))) &&
                     ((search.StartDate == "" || x.campaign.StartDate.Value.Date >= DateTime.Parse(search.StartDate).Date) && (search.EndDate == "" || x.campaign.EndDate.Value.Date <= DateTime.Parse(search.EndDate).Date)) &&
                     (x.campaign.City != null && x.campaign.City.Contains(search.City)))
@@ -217,7 +218,7 @@ namespace DonationAppDemo.DAL
                     (combined, recipient) => new { combined.campaign, combined.status, combined.organiser, recipient })
                 .SelectMany(x => x.recipient.DefaultIfEmpty(),
                     (x, recipient) => new { x.campaign, x.status, x.organiser, recipient })
-                .Where(x => x.campaign.Disabled != false && x.campaign.Id == campaignId)
+                .Where(x => x.campaign.Id == campaignId)
                 .Select(x => new CampaignDetailBDto
                 {
                     Id = x.campaign.Id,
@@ -284,6 +285,11 @@ namespace DonationAppDemo.DAL
                 throw new Exception($"Not found campaign id {campaignId}");
             }
 
+            if(campaign.OrganiserId != organiserId)
+            {
+                throw new Exception($"This campaign does not belong to you");
+            }
+
             string? normalizedText = StringExtension.NormalizeString(campaignCUDto.Title);
 
             campaign.Title = campaignCUDto.Title;
@@ -302,7 +308,7 @@ namespace DonationAppDemo.DAL
             campaign.RecipientId = campaignCUDto.RecipientId;
             campaign.UpdatedDate = DateTime.Now;
             campaign.UpdatedBy = organiserId;
-            campaign.Disabled = campaignCUDto.Disabled == "Active" ? false : true;
+            campaign.Disabled = campaignCUDto.Disabled == "0" ? false : true;
 
 
             _context.Campaign.Update(campaign);

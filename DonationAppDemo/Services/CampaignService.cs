@@ -98,6 +98,14 @@ namespace DonationAppDemo.Services
         }
         public async Task<List<CampaignShortCDto>?> GetSearchedListByOrganiser(int pageIndex, CampaignSearchADto search)
         {
+            // Get current user
+            var handler = new JwtSecurityTokenHandler();
+            string authHeader = _httpContextAccessor.HttpContext.Request.Headers["Authorization"];
+            authHeader = authHeader.Replace("Bearer ", "");
+            var jsonToken = handler.ReadToken(authHeader);
+            var tokenS = handler.ReadJwtToken(authHeader) as JwtSecurityToken;
+            var currentUserId = tokenS.Claims.First(claim => claim.Type == "Id").Value.ToString();
+
             // Convert type
             if (search.StartDate != "" || search.EndDate != "")
             {
@@ -121,7 +129,7 @@ namespace DonationAppDemo.Services
             search.User = normalized == null ? "" : normalized;
 
             // Do search
-            var campaigns = await _campaignDal.GetSearchedListByOrganiser(pageIndex, search);
+            var campaigns = await _campaignDal.GetSearchedListByOrganiser(pageIndex, search, Int32.Parse(currentUserId));
             return campaigns;
         }
         public async Task<CampaignDetailBDto?> GetById(int campaignId)
@@ -137,7 +145,7 @@ namespace DonationAppDemo.Services
             authHeader = authHeader.Replace("Bearer ", "");
             var jsonToken = handler.ReadToken(authHeader);
             var tokenS = handler.ReadJwtToken(authHeader) as JwtSecurityToken;
-            var currentUserId = tokenS.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value.ToString();
+            var currentUserId = tokenS.Claims.First(claim => claim.Type == "Id").Value.ToString();
 
             // Add cover image to cloudinary
             ImageUploadResult? coverImageResult = null;
@@ -181,7 +189,7 @@ namespace DonationAppDemo.Services
             authHeader = authHeader.Replace("Bearer ", "");
             var jsonToken = handler.ReadToken(authHeader);
             var tokenS = handler.ReadJwtToken(authHeader) as JwtSecurityToken;
-            var currentUserId = tokenS.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value.ToString();
+            var currentUserId = tokenS.Claims.First(claim => claim.Type == "Id").Value.ToString();
 
             // Add cover image to cloudinary
             ImageUploadResult? coverImageResult = null;

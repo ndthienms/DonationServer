@@ -27,6 +27,8 @@ namespace DonationAppDemo.Services
         private readonly IConfiguration _config;
         private readonly Cloudinary _cloudinary;
 
+        private static FirebaseApp? firebaseApp;
+
         public UtilitiesService(IConfiguration config)
         {
             _config = config;
@@ -40,13 +42,34 @@ namespace DonationAppDemo.Services
             _cloudinary = new Cloudinary(account);
 
             // Firebase cloud messaging
-            if (FirebaseApp.DefaultInstance == null)
+            if (firebaseApp == null)
+            {
+                try
+                {
+                    // This will only create a new FirebaseApp if it doesn't already exist.
+                    if (FirebaseApp.DefaultInstance == null)
+                    {
+                        FirebaseApp.Create(new AppOptions()
+                        {
+                            Credential = GoogleCredential.FromFile(_config["FirebaseSetting:ServiceAccountPath"])
+                        });
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    // Handle the exception if necessary
+                    Console.WriteLine($"Error initializing Firebase: {ex.Message}");
+                }
+            }
+
+
+            /*if (FirebaseApp.DefaultInstance == null)
             {
                 FirebaseApp.Create(new AppOptions()
                 {
                     Credential = GoogleCredential.FromFile(_config["FirebaseSetting:ServiceAccountPath"])
                 });
-            }
+            }*/
         }
         public async Task<string> TwilioSendCodeSms(string phoneNum)
         {
