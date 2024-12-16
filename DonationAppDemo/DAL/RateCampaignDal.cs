@@ -2,11 +2,59 @@
 using DonationAppDemo.DTOs;
 using DonationAppDemo.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 namespace DonationAppDemo.DAL
 {
     public class RateCampaignDal: IRateCampaignDal
     {
+        private readonly DonationDbContext _context;
+        public RateCampaignDal(DonationDbContext context)
+        {
+            _context = context;
+        }
+
+        public async Task<List<RateCampaignDto>> GetListByCampaignId(int campaignId, int pageIndex)
+        {
+            // Fetch all image campaigns that match the given campaignId
+            return await _context.RateCampaign
+                .Join(_context.Donor,
+                    rateCampaign => rateCampaign.DonorId,
+                    donor => donor.Id,
+                    (rateCampaign, donor) => new { rateCampaign, donor })
+                .Where(x => x.rateCampaign.CampaignId == campaignId)
+                .OrderByDescending(x => x.rateCampaign.RatedDate)
+                .Skip((pageIndex - 1) * 5)
+                .Take(5)
+                .Select(x => new RateCampaignDto
+                {
+                    CampaignId = x.rateCampaign.CampaignId,
+                    DonorId = x.rateCampaign.DonorId,
+                    DonorName = x.donor.Name,
+                    DonorAva = x.donor.AvaSrc,
+                    Rate = x.rateCampaign.Rate,
+                    Content = x.rateCampaign.Comment,
+                    RatedDate = x.rateCampaign.RatedDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)
+                })
+                .ToListAsync();
+        }
+        public async Task<bool> Add(RateCampaign rateCampaign)
+        {
+            _context.RateCampaign.Add(rateCampaign);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+        public async Task<bool> RemoveByDonorId(int campaignId, int donorId)
+        {
+            var rate = await _context.RateCampaign.Where(x => x.CampaignId == campaignId && x.DonorId == donorId).FirstOrDefaultAsync();
+            if(rate == null) return false;
+
+            _context.RateCampaign.Remove(rate);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
         /*private readonly DonationDbContext _context;
         public RateCampaignDal(DonationDbContext context)
         {

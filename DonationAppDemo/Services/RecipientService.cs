@@ -1,6 +1,7 @@
 ﻿using DonationAppDemo.DAL;
 using DonationAppDemo.DAL.Interfaces;
 using DonationAppDemo.DTOs;
+using DonationAppDemo.Models;
 using DonationAppDemo.Services.Interfaces;
 
 namespace DonationAppDemo.Services
@@ -23,15 +24,21 @@ namespace DonationAppDemo.Services
         }
         public async Task<List<UserDto>> GetAll(int pageIndex)
         {
-            var donors = await _recipientDal.GetAll(pageIndex);
+            var recipients = await _recipientDal.GetAll(pageIndex);
 
-            return donors;
+            return recipients;
         }
         public async Task<List<UserDto>> GetSearchedList(int pageIndex, string text)
         {
-            var donor = await _recipientDal.GetSearchedList(pageIndex, text);
+            var recipient = await _recipientDal.GetSearchedList(pageIndex, text);
 
-            return donor;
+            return recipient;
+        }
+        public async Task<Recipient?> GetById(int id)
+        {
+            var resipient = await _recipientDal.GetById(id);
+
+            return resipient;
         }
     }
 }

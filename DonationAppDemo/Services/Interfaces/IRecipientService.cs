@@ -1,4 +1,5 @@
 ﻿using DonationAppDemo.DTOs;
+using DonationAppDemo.Models;
 
 namespace DonationAppDemo.Services.Interfaces
 {
@@ -6,5 +7,6 @@ namespace DonationAppDemo.Services.Interfaces
     {
         Task<List<UserDto>> GetAll(int pageIndex);
         Task<List<UserDto>> GetSearchedList(int pageIndex, string text);
+        Task<Recipient?> GetById(int id);
     }
 }

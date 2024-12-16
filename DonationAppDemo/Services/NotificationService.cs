@@ -112,7 +112,11 @@ namespace DonationAppDemo.Services
             }
 
             var tokens = await _userTokenService.GetTokenList(userIds, userRole);
-            await _utilitiesService.SendMultipleNotifications(tokens, notificationTitle, notificationBody);
+
+            if(tokens != null && tokens.Count() > 0)
+            {
+                await _utilitiesService.SendMultipleNotifications(tokens, notificationTitle, notificationBody);
+            }
 
             return true;
         }

@@ -64,6 +64,68 @@ namespace DonationAppDemo.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("GetSearchedListByOrganiser/{pageIndex}")]
+        public async Task<IActionResult> GetSearchedListByOrganiser([FromRoute] int pageIndex, [FromBody] CampaignSearchADto search)
+        {
+            try
+            {
+                var result = await _campaignService.GetSearchedListByOrganiser(pageIndex, search);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("GetById/{campaignId}")]
+        public async Task<IActionResult> GetById([FromRoute]int campaignId)
+        {
+            try
+            {
+                var result = await _campaignService.GetById(campaignId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("Add")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "organiser")]
+        public async Task<IActionResult> Add([FromForm] CampaignCUDto campaignCUDto)
+        {
+            try
+            {
+                var result = await _campaignService.Add(campaignCUDto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("Update/{campaignId}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "organiser")]
+        public async Task<IActionResult> Update([FromRoute] int campaignId, [FromForm] CampaignCUDto campaignCUDto)
+        {
+            try
+            {
+                var result = await _campaignService.Update(campaignId, campaignCUDto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPut]
         [Route("UpdateDisabledCampaign/{campaignId}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]

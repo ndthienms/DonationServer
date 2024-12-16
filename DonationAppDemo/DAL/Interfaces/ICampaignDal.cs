@@ -8,6 +8,10 @@ namespace DonationAppDemo.DAL.Interfaces
         Task<List<CampaignShortADto>?> GetListByAdmin(int pageIndex);
         Task<List<CampaignShortADto>?> GetSearchedListByAdmin(int pageIndex, CampaignSearchADto search);
         Task<List<CampaignShortBDto>?> GetSearchedListByUser(int pageIndex, CampaignSearchADto search);
+        Task<List<CampaignShortCDto>?> GetSearchedListByOrganiser(int pageIndex, CampaignSearchADto search, int organiserId);
+        Task<CampaignDetailBDto?> GetById(int campaignId);
+        Task<Campaign> Add(CampaignCUDto campaignCUDto, string? coverPublicId, string? coverSrc, int? organiserId);
+        Task<Campaign> Update(int campaignId, CampaignCUDto campaignCUDto, string? coverPublicId, string? coverSrc, int? organiserId);
         Task<bool> UpdateDisabledCampaign(int campaignId, bool disabled);
         /*Task<Campaign?> Get(int campaignId);
         Task<Campaign> Add(Campaign campaign);

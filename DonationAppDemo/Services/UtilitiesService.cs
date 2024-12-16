@@ -27,6 +27,8 @@ namespace DonationAppDemo.Services
         private readonly IConfiguration _config;
         private readonly Cloudinary _cloudinary;
 
+        private static FirebaseApp? firebaseApp;
+
         public UtilitiesService(IConfiguration config)
         {
             _config = config;
@@ -40,13 +42,34 @@ namespace DonationAppDemo.Services
             _cloudinary = new Cloudinary(account);
 
             // Firebase cloud messaging
-            if (FirebaseApp.DefaultInstance == null)
+            if (firebaseApp == null)
+            {
+                try
+                {
+                    // This will only create a new FirebaseApp if it doesn't already exist.
+                    if (FirebaseApp.DefaultInstance == null)
+                    {
+                        FirebaseApp.Create(new AppOptions()
+                        {
+                            Credential = GoogleCredential.FromFile(_config["FirebaseSetting:ServiceAccountPath"])
+                        });
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    // Handle the exception if necessary
+                    Console.WriteLine($"Error initializing Firebase: {ex.Message}");
+                }
+            }
+
+
+            /*if (FirebaseApp.DefaultInstance == null)
             {
                 FirebaseApp.Create(new AppOptions()
                 {
                     Credential = GoogleCredential.FromFile(_config["FirebaseSetting:ServiceAccountPath"])
                 });
-            }
+            }*/
         }
         public async Task<string> TwilioSendCodeSms(string phoneNum)
         {
@@ -152,11 +175,12 @@ namespace DonationAppDemo.Services
             //vnp_ResponseCode:Response code from VNPAY: 00: Thanh cong, Khac 00: Xem tai lieu
             //vnp_SecureHash: HmacSHA512 cua du lieu tra ve
 
+            string vnp_ResponseCode = vnpay.GetResponseData("vnp_ResponseCode");
             string vnp_date = vnpay.GetResponseData("vnp_PayDate");
-            long vnp_OrderId = Convert.ToInt64(vnpay.GetResponseData("vnp_TxnRef"));
+            //long vnp_OrderId = Convert.ToInt64(vnpay.GetResponseData("vnp_TxnRef"));
+            string vnp_OrderId = vnpay.GetResponseData("vnp_TxnRef");
             decimal vnp_Amount = Decimal.Parse(vnpay.GetResponseData("vnp_Amount")) / 100;
             long vnpay_TranId = Convert.ToInt64(vnpay.GetResponseData("vnp_TransactionNo"));
-            string vnp_ResponseCode = vnpay.GetResponseData("vnp_ResponseCode");
             //string vnp_TransactionStatus = vnpay.GetResponseData("vnp_TransactionStatus");
             string vnp_SecureHash = collections.FirstOrDefault(p => p.Key == "vnp_SecureHash").Value;
             string vnp_OrderInfo = vnpay.GetResponseData("vnp_OrderInfo");
@@ -349,7 +373,8 @@ namespace DonationAppDemo.Services
             };
 
             // Send a message to the device corresponding to the provided registration token
-            var response = await FirebaseMessaging.DefaultInstance.SendMulticastAsync(message);
+            //var response = await FirebaseMessaging.DefaultInstance.SendMulticastAsync(message);
+            var response = await FirebaseMessaging.DefaultInstance.SendEachForMulticastAsync(message);
             return response;
         }
     }

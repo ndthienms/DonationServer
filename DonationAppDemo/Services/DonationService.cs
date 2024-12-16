@@ -1,7 +1,11 @@
-﻿using DonationAppDemo.DAL.Interfaces;
+﻿using CloudinaryDotNet;
+using DonationAppDemo.DAL;
+using DonationAppDemo.DAL.Interfaces;
 using DonationAppDemo.DTOs;
+using DonationAppDemo.Helper;
 using DonationAppDemo.Models;
 using DonationAppDemo.Services.Interfaces;
+using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
@@ -30,7 +34,7 @@ namespace DonationAppDemo.Services
             _config = config;
             _httpContextAccessor = httpContextAccessor;
         }
-        public async Task<List<DonationDto>?> GetListByCampaignId(int campaignId, SearchDto searchDto)
+        /*public async Task<List<DonationDto>?> GetListByCampaignId(int campaignId, SearchDto searchDto)
         {
             // Get 20 records of donation
             var donations = await _donationDal.GetListByCampaignId(campaignId, searchDto.PageIndex, searchDto.FromDate, searchDto.ToDate, searchDto.Id == null ? null : Int32.Parse(searchDto.Id));
@@ -98,6 +102,32 @@ namespace DonationAppDemo.Services
             var currentUserId = tokenS.Claims.First(claim => claim.Type == "Id").Value.ToString();
 
             return await _donationDal.GetListByDonorId(Int32.Parse(currentUserId), searchDto.PageIndex, searchDto.FromDate, searchDto.ToDate);
+        }*/
+        public async Task<List<DonationDto>?> GetSearchedListByCampaignId(int campaignId, SearchDto searchDto)
+        {
+            // Convert type
+            if (searchDto.FromDate != "" || searchDto.ToDate != "")
+            {
+                if (searchDto.ToDate == "" || searchDto.FromDate == "")
+                {
+                    throw new Exception("From date and To date can not be null if one of them is not null");
+                }
+            }
+            else
+            {
+                //search.StartDate = DateTime.MinValue.ToString();
+                //search.EndDate = DateTime.Now.ToString();
+
+                searchDto.FromDate = "";
+                searchDto.ToDate = "";
+            }
+
+            string? normalized = StringExtension.NormalizeString(searchDto.Donor);
+            searchDto.Donor = normalized == null ? "" : normalized;
+
+            // Do search
+            var donations = await _donationDal.GetSearchedListByCampaignId(campaignId, searchDto);
+            return donations;
         }
         public async Task<string> CreatePaymentUrl(HttpContext context, PaymentRequestDto request)
         {
@@ -177,7 +207,7 @@ namespace DonationAppDemo.Services
                 DonorId = resultPayment.UserId,
                 DonorName = donor.Name,
                 DonorAvaSrc = donor.AvaSrc,
-                DonationDate = resultPayment.PaymentDate,
+                DonationDate = resultPayment.PaymentDate == null ? "?" : resultPayment.PaymentDate.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
                 Amount = resultPayment.Amount,
                 CampaignDonationTotal = transactionResult.TotalDonationAmount
             };

@@ -5,6 +5,7 @@ namespace DonationAppDemo.DAL.Interfaces
 {
     public interface IImageCampaignDal
     {
+        Task<List<ImageCampaignDto>?> GetAll(int pageIndex, int campaignId, int campaignStatusId);
         /*Task<List<ImageCampaign>> AddImages(List<ImageCampaign> imageCamapaigns);
         Task<bool> Remove(int imageId);
         Task<bool> RemoveByCampaignId(int campaignId);
