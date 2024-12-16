@@ -1,4 +1,4 @@
-using DonationAppDemo.DAL;
+﻿using DonationAppDemo.DAL;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +10,9 @@ using DonationAppDemo.Services;
 using DonationAppDemo.DAL.Interfaces;
 using DonationAppDemo.Services.Interfaces;
 using DonationAppDemo.HubConfig;
+using System.ComponentModel;
+using OfficeOpenXml;
+using LicenseContext = OfficeOpenXml.LicenseContext;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -64,11 +67,6 @@ builder.Services.AddTransient<IDonationDal, DonationDal>();
 builder.Services.AddTransient<ICampaignStatisticsDal, CampaignStatisticsDal>();
 builder.Services.AddTransient<INotificationDal, NotificationDal>();
 builder.Services.AddTransient<IRecipientDal, RecipientDal>();
-builder.Services.AddTransient<IExpenseDal, ExpenseDal>();
-builder.Services.AddTransient<ITransferenceDal, TransferenceDal>();
-builder.Services.AddTransient<IPostDal, PostDal>();
-builder.Services.AddTransient<IImagePostDal, ImagePostDal>();
-builder.Services.AddTransient<ICommentDal, CommentDal>();
 
 /*Service*/
 builder.Services.AddTransient<IUserAuthenticationService, UserAuthenticationService>();
@@ -79,7 +77,6 @@ builder.Services.AddTransient<IOrganiserService, OrganiserService>();
 builder.Services.AddTransient<IUserTokenService, UserTokenService>();
 builder.Services.AddTransient<IUtilitiesService, UtilitiesService>();
 builder.Services.AddTransient<ICampaignService, CampaignService>();
-builder.Services.AddTransient<IRateCampaignService, RateCampaignService>();
 builder.Services.AddTransient<ICampaignStatisticsService, CampaignStatisticsService>();
 builder.Services.AddTransient<ICampaignParticipantService, CampaignParticipantService>();
 builder.Services.AddTransient<IImageCampaignService, ImageCampaignService>();
@@ -87,12 +84,14 @@ builder.Services.AddTransient<IDonationService, DonationService>();
 builder.Services.AddTransient<IDonationHubService, DonationHubService>();
 builder.Services.AddTransient<INotificationService, NotificationService>();
 builder.Services.AddTransient<IRecipientService, RecipientService>();
-builder.Services.AddTransient<IExpenseService, ExpenseService>();
-builder.Services.AddTransient<ITransferenceService, TransferenceService>();
-builder.Services.AddTransient<IPostService, PostService>();
+builder.Services.AddScoped<IGeocodingService, GeocodingService>();
 
+//builder.Services.AddHostedService<GeocodingBackgroundService>();
 // HttpContext
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+//ExcellPackage
+ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
 // Cors
 builder.Services.AddCors(option =>

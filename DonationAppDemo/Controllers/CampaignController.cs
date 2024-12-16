@@ -4,6 +4,7 @@ using DonationAppDemo.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 
 namespace DonationAppDemo.Controllers
 {
@@ -12,6 +13,7 @@ namespace DonationAppDemo.Controllers
     public class CampaignController : ControllerBase
     {
         private readonly ICampaignService _campaignService;
+
 
         public CampaignController(ICampaignService campaignService)
         {
@@ -64,21 +66,6 @@ namespace DonationAppDemo.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("GetSearchedListByOrganiser/{pageIndex}")]
-        public async Task<IActionResult> GetSearchedListByOrganiser([FromRoute] int pageIndex, [FromBody] CampaignSearchADto search)
-        {
-            try
-            {
-                var result = await _campaignService.GetSearchedListByOrganiser(pageIndex, search);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
         [HttpGet]
         [Route("GetById/{campaignId}")]
         public async Task<IActionResult> GetById([FromRoute]int campaignId)
@@ -86,38 +73,6 @@ namespace DonationAppDemo.Controllers
             try
             {
                 var result = await _campaignService.GetById(campaignId);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpPost]
-        [Route("Add")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "organiser")]
-        public async Task<IActionResult> Add([FromForm] CampaignCUDto campaignCUDto)
-        {
-            try
-            {
-                var result = await _campaignService.Add(campaignCUDto);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpPut]
-        [Route("Update/{campaignId}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "organiser")]
-        public async Task<IActionResult> Update([FromRoute] int campaignId, [FromForm] CampaignCUDto campaignCUDto)
-        {
-            try
-            {
-                var result = await _campaignService.Update(campaignId, campaignCUDto);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -141,6 +96,22 @@ namespace DonationAppDemo.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        //API Export to file Excell
+        [HttpGet("ExportDonationsToExcel")]
+        public IActionResult ExportDonationsToExcel(int campaignId, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+        {
+            var excelFile = _campaignService.GenerateExcelReportDonations(campaignId,startDate, endDate);
+            return File(excelFile, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Donations.xlsx");
+        }
+        [HttpGet("ExportExpenseToExcel")]
+        public IActionResult ExportExpenseToExcel(int campaignId,[FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+        {
+            var excelFile = _campaignService.GenerateExcelReportExpense(campaignId,startDate, endDate);
+            return File(excelFile, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Expenses.xlsx");
+        }
+
+
+
         /*private readonly ICampaignService _campaignService;
 
         public CampaignController(ICampaignService campaignService)
