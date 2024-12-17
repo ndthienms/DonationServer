@@ -1,4 +1,5 @@
-﻿using DonationAppDemo.DAL;
+﻿using CloudinaryDotNet.Actions;
+using DonationAppDemo.DAL;
 using DonationAppDemo.DAL.Interfaces;
 using DonationAppDemo.DTOs;
 using DonationAppDemo.Helper;
@@ -6,19 +7,38 @@ using DonationAppDemo.Models;
 using DonationAppDemo.Services.Interfaces;
 using Microsoft.Data.SqlClient;
 using OfficeOpenXml;
+using System.Globalization;
+using System.IdentityModel.Tokens.Jwt;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace DonationAppDemo.Services
 {
     public class CampaignService : ICampaignService
     {
-        private readonly ICampaignDal _campaignDal;
         private readonly string? _connectionString;
         private readonly IConfiguration _config;
 
-        public CampaignService(ICampaignDal campaignDal, IConfiguration config)
+        private readonly ICampaignDal _campaignDal;
+        private readonly IRecipientService _recipientService;
+        private readonly ICampaignParticipantService _participantService;
+        private readonly INotificationService _notificationService;
+        private readonly IUtilitiesService _utilitiesService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public CampaignService(ICampaignDal campaignDal,
+            IRecipientService recipientService,
+            ICampaignParticipantService participantService,
+            INotificationService notificationService,
+            IUtilitiesService utilitiesService,
+            IHttpContextAccessor httpContextAccessor,
+            IConfiguration config)
         {
             _campaignDal = campaignDal;
+            _recipientService = recipientService;
+            _participantService = participantService;
+            _notificationService = notificationService;
+            _utilitiesService = utilitiesService;
+            _httpContextAccessor = httpContextAccessor;
             _config = config;
             _connectionString = config.GetConnectionString("DonationDbConnection");
             
@@ -84,7 +104,155 @@ namespace DonationAppDemo.Services
             var campaigns = await _campaignDal.GetSearchedListByUser(pageIndex, search);
             return campaigns;
         }
-       
+
+        public async Task<List<CampaignShortCDto>?> GetSearchedListByOrganiser(int pageIndex, CampaignSearchADto search)
+        {
+            // Get current user
+            var handler = new JwtSecurityTokenHandler();
+            string authHeader = _httpContextAccessor.HttpContext.Request.Headers["Authorization"];
+            authHeader = authHeader.Replace("Bearer ", "");
+            var jsonToken = handler.ReadToken(authHeader);
+            var tokenS = handler.ReadJwtToken(authHeader) as JwtSecurityToken;
+            var currentUserId = tokenS.Claims.First(claim => claim.Type == "Id").Value.ToString();
+
+            // Convert type
+            if (search.StartDate != "" || search.EndDate != "")
+            {
+                if (search.EndDate == "" || search.StartDate == "")
+                {
+                    throw new Exception("Start date and End date can not be null if one of them is not null");
+                }
+            }
+            else
+            {
+                //search.StartDate = DateTime.MinValue.ToString();
+                //search.EndDate = DateTime.Now.ToString();
+
+                search.StartDate = "";
+                search.EndDate = "";
+            }
+
+            string? normalized = StringExtension.NormalizeString(search.Campaign);
+            search.Campaign = normalized == null ? "" : normalized;
+            normalized = StringExtension.NormalizeString(search.User);
+            search.User = normalized == null ? "" : normalized;
+
+            // Do search
+            var campaigns = await _campaignDal.GetSearchedListByOrganiser(pageIndex, search, Int32.Parse(currentUserId));
+            return campaigns;
+        }
+        public async Task<CampaignDetailBDto?> GetById(int campaignId)
+        {
+            var campaign = await _campaignDal.GetById(campaignId);
+            return campaign;
+        }
+        public async Task<CampaignShortCDto> Add(CampaignCUDto campaignCUDto)
+        {
+            // Get current user
+            var handler = new JwtSecurityTokenHandler();
+            string authHeader = _httpContextAccessor.HttpContext.Request.Headers["Authorization"];
+            authHeader = authHeader.Replace("Bearer ", "");
+            var jsonToken = handler.ReadToken(authHeader);
+            var tokenS = handler.ReadJwtToken(authHeader) as JwtSecurityToken;
+            var currentUserId = tokenS.Claims.First(claim => claim.Type == "Id").Value.ToString();
+
+            // Add cover image to cloudinary
+            ImageUploadResult? coverImageResult = null;
+            if (campaignCUDto.CoverSrc != null)
+            {
+                coverImageResult = await _utilitiesService.CloudinaryUploadPhotoAsync(campaignCUDto.CoverSrc);
+                if (coverImageResult.Error != null)
+                {
+                    throw new Exception("Cannot upload certidication image");
+                }
+            }
+
+            // Add campaign to db
+            var campaign = await _campaignDal.Add(campaignCUDto, coverImageResult == null ? null : coverImageResult.PublicId, coverImageResult == null ? null : coverImageResult.SecureUrl.AbsoluteUri, Int32.Parse(currentUserId));
+
+            var recipient = await _recipientService.GetById((int)campaignCUDto.RecipientId);
+
+            var campaignDto = new CampaignShortCDto
+            {
+                Id = campaign.Id,
+                Title = campaign.Title,
+                Target = campaign.Target,
+                StartDate = campaign.StartDate == null ? "?" : campaign.StartDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                EndDate = campaign.EndDate == null ? "?" : campaign.EndDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                Address = campaign.Address + ", " + campaign.City,
+                Status = campaign.StatusCampaignId == 1 ? "Đang chuẩn bị" : campaign.StatusCampaignId == 2 ? "Đang tiến hành" : campaign.StatusCampaignId == 3 ? "Đã kết thúc" : null,
+                UserId = recipient.Id,
+                UserName = recipient.Name,
+                UserAva = recipient.AvaSrc,
+                Received = campaign.Received == false ? "Chưa nhận" : "Đã nhận",
+                CreatedDate = campaign.CreatedDate == null ? "" : ((DateTime)campaign.CreatedDate).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                Disabled = campaign.Disabled == false ? "Active" : "Disabled"
+            };
+            return campaignDto;
+        }
+        public async Task<CampaignShortCDto> Update(int campaignId, CampaignCUDto campaignCUDto)
+        {
+            // Get current user
+            var handler = new JwtSecurityTokenHandler();
+            string authHeader = _httpContextAccessor.HttpContext.Request.Headers["Authorization"];
+            authHeader = authHeader.Replace("Bearer ", "");
+            var jsonToken = handler.ReadToken(authHeader);
+            var tokenS = handler.ReadJwtToken(authHeader) as JwtSecurityToken;
+            var currentUserId = tokenS.Claims.First(claim => claim.Type == "Id").Value.ToString();
+
+            // Add cover image to cloudinary
+            ImageUploadResult? coverImageResult = null;
+            if (campaignCUDto.CoverSrc != null)
+            {
+                coverImageResult = await _utilitiesService.CloudinaryUploadPhotoAsync(campaignCUDto.CoverSrc);
+                if (coverImageResult.Error != null)
+                {
+                    throw new Exception("Cannot upload certidication image");
+                }
+            }
+
+            // Update campaign to db
+            var campaign = await _campaignDal.Update(campaignId, campaignCUDto, coverImageResult == null ? null : coverImageResult.PublicId, coverImageResult == null ? null : coverImageResult.SecureUrl.AbsoluteUri, Int32.Parse(currentUserId));
+
+            var recipient = await _recipientService.GetById((int)campaignCUDto.RecipientId);
+
+            var campaignDto = new CampaignShortCDto
+            {
+                Id = campaign.Id,
+                Title = campaign.Title,
+                Target = campaign.Target,
+                StartDate = campaign.StartDate == null ? "?" : campaign.StartDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                EndDate = campaign.EndDate == null ? "?" : campaign.EndDate.Value.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                Address = campaign.Address + ", " + campaign.City,
+                Status = campaign.StatusCampaignId == 1 ? "Đang chuẩn bị" : campaign.StatusCampaignId == 2 ? "Đang tiến hành" : campaign.StatusCampaignId == 3 ? "Đã kết thúc" : null,
+                UserId = recipient.Id,
+                UserName = recipient.Name,
+                UserAva = recipient.AvaSrc,
+                Received = campaign.Received == false ? "Chưa nhận" : "Đã nhận",
+                CreatedDate = campaign.CreatedDate == null ? "" : ((DateTime)campaign.CreatedDate).ToString("dd/MM/yyyy", CultureInfo.InvariantCulture),
+                Disabled = campaign.Disabled == false ? "Active" : "Disabled"
+            };
+
+            // Notification
+            List<int>? userIds = await _participantService.GetAllDonorIdByCampaignId(campaignId);
+            var notification = new Notification
+            {
+                NotificationTitle = $"Cập nhật chiến dịch {campaign.Title}",
+                NotificationText = $"Cập nhật thông tin chiến dịch {campaign.Title}",
+                NotificationDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second),
+                IsRead = false,
+                Marked = false,
+                FromUserId = Int32.Parse(currentUserId),
+                FromUserRole = "organiser",
+                ToUserId = null,
+                ToUserRole = "donor"
+            };
+
+            var notiAddResult = await _notificationService.AddList(userIds, notification);
+            var noti = await _notificationService.SendMultipleNotifications(userIds, "donor", notification.NotificationTitle, notification.NotificationText);
+
+            return campaignDto;
+        }
         public async Task<bool> UpdateDisabledCampaign(int campaignId, bool disabled)
         {
             var result = await _campaignDal.UpdateDisabledCampaign(campaignId, disabled);
@@ -95,11 +263,7 @@ namespace DonationAppDemo.Services
 
             return result;
         }
-        public async Task<CampaignDetailBDto?> GetById(int campaignId)
-        {
-            var campaign = await _campaignDal.GetById(campaignId);
-            return campaign;
-        }
+
         //Export file Excell
         public MemoryStream GenerateExcelReportDonations(int campaignId, DateTime startDate, DateTime endDate)
         {

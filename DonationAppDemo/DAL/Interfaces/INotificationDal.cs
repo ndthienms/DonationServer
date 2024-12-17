@@ -4,7 +4,7 @@ namespace DonationAppDemo.DAL.Interfaces
 {
     public interface INotificationDal
     {
-        Task<Notification?> GetLatestNotification(int userId, string userRole);
+        Task<int> GetLatestNotification(int userId, string userRole);
         Task<List<Notification>?> Get(int userId, string userRole, int pageIndex);
         Task<bool> UpdateMarked(Notification? notification);
         Task<bool> UpdateRead(int notificationId);

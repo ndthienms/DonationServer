@@ -26,13 +26,19 @@ namespace DonationAppDemo.Services
             // Get current user
             var handler = new JwtSecurityTokenHandler();
             string authHeader = _httpContextAccessor.HttpContext.Request.Headers["Authorization"];
-            authHeader = authHeader.Replace("Bearer ", "");
-            var jsonToken = handler.ReadToken(authHeader);
-            var tokenS = handler.ReadJwtToken(authHeader) as JwtSecurityToken;
-            var currentUserId = tokenS.Claims.First(claim => claim.Type == "Id").Value.ToString();
+            if(authHeader != null)
+            {
+                authHeader = authHeader.Replace("Bearer ", "");
+                var jsonToken = handler.ReadToken(authHeader);
+                var tokenS = handler.ReadJwtToken(authHeader) as JwtSecurityToken;
+                var currentUserId = tokenS.Claims.First(claim => claim.Type == "Id").Value.ToString();
 
-            var result = await _campaignParticipantDal.CheckParticipated(Int32.Parse(currentUserId), campaignId);
-            return result;
+                var result = await _campaignParticipantDal.CheckParticipated(Int32.Parse(currentUserId), campaignId);
+
+                return result;
+            }
+            
+            return false;
         }
         public async Task<bool> JoinCampaign(int campaignId)
         {

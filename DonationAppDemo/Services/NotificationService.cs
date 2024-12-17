@@ -23,7 +23,7 @@ namespace DonationAppDemo.Services
             _utilitiesService = utilitiesService;
             _httpContextAccessor = httpContextAccessor;
         }
-        public async Task<bool> CheckReadLatestNotification()
+        public async Task<int> CheckReadLatestNotification()
         {
             // Get current user
             var handler = new JwtSecurityTokenHandler();
@@ -34,9 +34,9 @@ namespace DonationAppDemo.Services
             var currentUserId = tokenS.Claims.First(claim => claim.Type == "Id").Value.ToString();
             var currentUserRole = tokenS.Claims.First(claim => claim.Type == ClaimTypes.Role).Value.ToString();
 
-            var notification = await _notificationDal.GetLatestNotification(Int32.Parse(currentUserId), currentUserRole);
+            var notificationCount = await _notificationDal.GetLatestNotification(Int32.Parse(currentUserId), currentUserRole);
 
-            if(notification == null)
+            /*if(notification == null)
             {
                 return true;
             }
@@ -44,9 +44,9 @@ namespace DonationAppDemo.Services
             if (notification.Marked == true)
             {
                 return true;
-            }
+            }*/
 
-            return false;
+            return notificationCount;
         }
         public async Task<List<Notification>?> Get(int pageIndex)
         {

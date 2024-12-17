@@ -12,13 +12,30 @@ namespace DonationAppDemo.DAL
         {
             _context = context;
         }
-        public async Task<Notification?> GetLatestNotification(int userId, string userRole)
+        public async Task<int> GetLatestNotification(int userId, string userRole)
         {
-            var latest = await _context.Notification
+            /*var latest = await _context.Notification
                 .Where(x => x.ToUserId == userId && x.ToUserRole == userRole)
                 .OrderByDescending(x => x.NotificationDate)
                 .FirstOrDefaultAsync();
-            return latest;
+            return latest;*/
+
+            // Get latest marked opening
+            var latest = await _context.Notification
+                .Where(m => m.Marked == true && m.ToUserId == userId && m.ToUserRole == userRole)
+                .OrderByDescending(m => m.NotificationDate)
+                .FirstOrDefaultAsync();
+
+            if(latest == null)
+            {
+                latest.NotificationDate = DateTime.MinValue;
+            }
+
+            var count = await _context.Notification
+                .Where(x => x.ToUserId == userId && x.ToUserRole == userRole && x.IsRead == false && x.NotificationDate > latest.NotificationDate)
+                .CountAsync();
+
+            return count;
         }
         public async Task<List<Notification>?> Get(int userId, string userRole, int pageIndex)
         {
@@ -27,8 +44,8 @@ namespace DonationAppDemo.DAL
                 var notifications = await _context.Notification
                 .Where(x => x.ToUserId == userId && x.ToUserRole == userRole)
                 .OrderByDescending(x => x.NotificationDate)
-                .Skip((pageIndex - 1) * 20)
-                .Take(20)
+                .Skip((pageIndex - 1) * 3)
+                .Take(3)
                 .ToListAsync();
                 return notifications;
             }
@@ -41,8 +58,8 @@ namespace DonationAppDemo.DAL
                     .Where(z => z.ToUserId == userId && z.ToUserRole == userRole && z.Marked == true)
                     .Max(z => z.NotificationDate))
                 .OrderByDescending(x => x.NotificationDate)
-                .Skip((pageIndex - 1) * 20)
-                .Take(20)
+                .Skip((pageIndex - 1) * 3)
+                .Take(3)
                 .ToListAsync();
                 return notifications;
             }

@@ -33,6 +33,21 @@ namespace DonationAppDemo.Services
             var currentUserId = tokenS.Claims.First(claim => claim.Type == "Id").Value.ToString();
             var currentUserRole = tokenS.Claims.First(claim => claim.Type == ClaimTypes.Role).Value.ToString();
 
+            // Check fcm token existed
+            List<int> userIds = new List<int>();
+            userIds.Add(Int32.Parse(currentUserId));
+            var tokens = await _userTokenDal.GetTokenList(userIds, currentUserRole);
+            if(tokens != null)
+            {
+                foreach (var token in tokens)
+                {
+                    if (token == fcmToken)
+                    {
+                        throw new Exception("Fcm token existed");
+                    }
+                }
+            }
+    
             var userToken = new UserToken
             {
                 UserId = Int32.Parse(currentUserId),

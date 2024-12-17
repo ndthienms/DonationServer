@@ -128,7 +128,7 @@ namespace DonationAppDemo.DAL
                     (combined, recipient) => new { combined.campaign, combined.status, combined.organiser, recipient })
                 .SelectMany(x => x.recipient.DefaultIfEmpty(),
                     (x, recipient) => new { x.campaign, x.status, x.organiser, recipient })
-                .Where(x => x.campaign.Disabled != false && (x.campaign.Id.ToString() == search.Campaign || (x.campaign.NormalizedTitle != null && x.campaign.NormalizedTitle.Contains(search.Campaign))) &&
+                .Where(x => x.campaign.Disabled == false && (x.campaign.Id.ToString() == search.Campaign || (x.campaign.NormalizedTitle != null && x.campaign.NormalizedTitle.Contains(search.Campaign))) &&
                     (x.organiser.Id.ToString() == search.User || (x.organiser.NormalizedName != null && x.organiser.NormalizedName.Contains(search.User))) &&
                     ((search.StartDate == "" || x.campaign.StartDate.Value.Date >= DateTime.Parse(search.StartDate).Date) && (search.EndDate == "" || x.campaign.EndDate.Value.Date <= DateTime.Parse(search.EndDate).Date)) &&
                     (x.campaign.City != null && x.campaign.City.Contains(search.City)))

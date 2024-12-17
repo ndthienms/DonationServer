@@ -54,7 +54,7 @@ namespace DonationAppDemo.Controllers
         [HttpPost]
         [Route("UpdateRead")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "organiser, donor")]
-        public async Task<IActionResult> UpdateRead([FromBody] int notificationId)
+        public async Task<IActionResult> UpdateRead([FromRoute] int notificationId)
         {
             try
             {
