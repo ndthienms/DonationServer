@@ -31,8 +31,9 @@ namespace DonationAppDemo.Services
             var post = new Post
             {
                 ContentPost = postDto.ContentPost,
-                PostDate = postDto.PostDate,
-                AdminId = postDto.AdminId
+                PostDate = DateTime.Now,
+                AdminId = postDto.AdminId,
+                Disabled = false
             };
 
             await _postDal.AddAsync(post);
@@ -55,7 +56,6 @@ namespace DonationAppDemo.Services
             if (post == null) throw new KeyNotFoundException("Post not found");
 
             post.ContentPost = postDto.ContentPost;
-            post.PostDate = postDto.PostDate;
 
             await _postDal.UpdateAsync(post);
 

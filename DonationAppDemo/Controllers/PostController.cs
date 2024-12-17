@@ -17,7 +17,7 @@ namespace DonationAppDemo.Controllers
         }
 
         [HttpPost("Add")]
-        public async Task<IActionResult> AddPost([FromForm] PostDto postDto)
+        public async Task<IActionResult> AddPost([FromBody] PostDto postDto)
         {
             try
             {

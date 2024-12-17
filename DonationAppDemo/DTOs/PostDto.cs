@@ -7,7 +7,6 @@ namespace DonationAppDemo.DTOs
     {
         public string? ContentPost { get; set; }
         public IFormFile? Image { get; set; }
-        public DateTime PostDate { get; set; }
         public int AdminId { get; set; }
     }
 }

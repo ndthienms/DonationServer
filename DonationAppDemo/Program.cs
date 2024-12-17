@@ -67,6 +67,10 @@ builder.Services.AddTransient<IDonationDal, DonationDal>();
 builder.Services.AddTransient<ICampaignStatisticsDal, CampaignStatisticsDal>();
 builder.Services.AddTransient<INotificationDal, NotificationDal>();
 builder.Services.AddTransient<IRecipientDal, RecipientDal>();
+builder.Services.AddTransient<IPostDal, PostDal>();
+builder.Services.AddTransient<ICommentDal, CommentDal>();
+builder.Services.AddTransient<IImagePostDal, ImagePostDal>();
+builder.Services.AddTransient<IExpenseDal, ExpenseDal>();
 
 /*Service*/
 builder.Services.AddTransient<IUserAuthenticationService, UserAuthenticationService>();
@@ -84,6 +88,8 @@ builder.Services.AddTransient<IDonationService, DonationService>();
 builder.Services.AddTransient<IDonationHubService, DonationHubService>();
 builder.Services.AddTransient<INotificationService, NotificationService>();
 builder.Services.AddTransient<IRecipientService, RecipientService>();
+builder.Services.AddTransient<IPostService, PostService>();
+builder.Services.AddTransient<IExpenseService, ExpenseService>();
 builder.Services.AddScoped<IGeocodingService, GeocodingService>();
 
 //builder.Services.AddHostedService<GeocodingBackgroundService>();
