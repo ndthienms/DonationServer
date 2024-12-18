@@ -28,6 +28,7 @@ namespace DonationAppDemo.DAL
 
             if(latest == null)
             {
+                latest = new Notification();
                 latest.NotificationDate = DateTime.MinValue;
             }
 
