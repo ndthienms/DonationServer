@@ -83,6 +83,31 @@ namespace DonationAppDemo.DAL
             await _context.SaveChangesAsync();
             return campaignStatistics;
         }
+        public async Task<CampaignStatistics> Delete(int campaignId, decimal total, string type)
+        {
+            var campaignStatistics = await _context.CampaignStatistics.Where(x => x.CampaignId == campaignId).FirstOrDefaultAsync();
+            if (campaignStatistics == null)
+            {
+                throw new Exception($"Did not find campaign id {campaignId}");
+            }
+
+            if (type == "donation")
+            {
+                campaignStatistics.TotalDonationAmount -= total;
+            }
+            else if (type == "expense")
+            {
+                campaignStatistics.TotalExpendedAmount -= total;
+            }
+            else
+            {
+                campaignStatistics.TotalTransferredAmount -= total;
+            }
+
+            _context.CampaignStatistics.Update(campaignStatistics);
+            await _context.SaveChangesAsync();
+            return campaignStatistics;
+        }
         public async Task<CampaignStatistics> GetByCampaignIdAsync(int campaignId)
         {
             return await _context.CampaignStatistics.FirstOrDefaultAsync(cs => cs.CampaignId == campaignId);

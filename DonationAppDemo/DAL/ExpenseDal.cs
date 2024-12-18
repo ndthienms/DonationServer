@@ -9,7 +9,40 @@ namespace DonationAppDemo.DAL
 {
     public class ExpenseDal : IExpenseDal
     {
-        private readonly DonationDbContext _dbContext;
+        private readonly DonationDbContext _context;
+
+        public ExpenseDal(DonationDbContext context)
+        {
+            _context = context;
+        }
+
+        public async Task<List<Expense>?> GetListByCampaign(int campaignId)
+        {
+            var expenses = await _context.Expense.Where(x => x.CampaignId == campaignId).ToListAsync();
+            return expenses;
+        }
+        public async Task<Expense> Add(Expense expense)
+        {
+            _context.Expense.Add(expense);
+            await _context.SaveChangesAsync();
+
+            return expense;
+        }
+
+        public async Task<Expense> Delete(int expenseId, int organiserId)
+        {
+            var expense = await _context.Expense.Where(x => x.Id == expenseId && x.OrganiserId == organiserId).FirstOrDefaultAsync();
+            if (expense == null)
+            {
+                throw new Exception($"Did not find expense id {expenseId}");
+            }
+
+            _context.Expense.Remove(expense);
+            await _context.SaveChangesAsync();
+
+            return expense;
+        }
+        /*private readonly DonationDbContext _dbContext;
 
         public ExpenseDal(DonationDbContext dbContext)
         {
@@ -47,6 +80,6 @@ namespace DonationAppDemo.DAL
         public async Task<IEnumerable<Expense>> GetByCampaignIdAsync(int campaignId)
         {
             return await _dbContext.Expense.Where(e => e.CampaignId == campaignId).ToListAsync();
-        }
+        }*/
     }
 }

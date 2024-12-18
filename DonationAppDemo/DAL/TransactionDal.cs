@@ -13,6 +13,7 @@ namespace DonationAppDemo.DAL
         private readonly IOrganiserDal _organiserDal;
         private readonly IRecipientDal _recipientDal;
         private readonly IDonationDal _donationDal;
+        private readonly IExpenseDal _expenseDal;
         private readonly ICampaignStatisticsDal _campaignStatisticsDal;
         /*private readonly ICampaignDal _campaignDal;
         private readonly IImageCampaignDal _imageCampaignDal;
@@ -28,6 +29,7 @@ namespace DonationAppDemo.DAL
             IRecipientDal recipientDal,
             // Payment
             IDonationDal donationDal,
+            IExpenseDal expenseDal,
             ICampaignStatisticsDal campaignStatisticsDal
             // Campaign
             /*ICampaignDal campaignDal,
@@ -43,6 +45,7 @@ namespace DonationAppDemo.DAL
             _organiserDal = organiserDal;
             _recipientDal = recipientDal;
             _donationDal = donationDal;
+            _expenseDal = expenseDal;
             _campaignStatisticsDal = campaignStatisticsDal;
             // Campaign
             /*_campaignDal = campaignDal;
@@ -200,6 +203,55 @@ namespace DonationAppDemo.DAL
                 {
                     await _donationDal.Add(paymentResponseDto);
                     var campaignStatistics = await _campaignStatisticsDal.Update(paymentResponseDto.CampaignId, paymentResponseDto.Amount, "donation");
+
+                    transaction.Commit();
+                    return campaignStatistics;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    return null;
+                }
+            }
+        }
+
+        // Expense + CampaignStatistics
+        public async Task<CampaignStatistics?> AddExpense(Expense expense)
+        {
+            if(expense.Amount == null)
+            {
+                throw new Exception("Amount can not be null");
+            }
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    await _expenseDal.Add(expense);
+                    var campaignStatistics = await _campaignStatisticsDal.Update(expense.CampaignId, (decimal)expense.Amount, "expense");
+
+                    transaction.Commit();
+                    return campaignStatistics;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    return null;
+                }
+            }
+        }
+
+        public async Task<CampaignStatistics?> DeleteExpense(Expense expense)
+        {
+            if (expense.Amount == null)
+            {
+                throw new Exception("Amount can not be null");
+            }
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    await _expenseDal.Delete(expense.Id, expense.OrganiserId);
+                    var campaignStatistics = await _campaignStatisticsDal.Delete(expense.CampaignId, (decimal)expense.Amount, "expense");
 
                     transaction.Commit();
                     return campaignStatistics;

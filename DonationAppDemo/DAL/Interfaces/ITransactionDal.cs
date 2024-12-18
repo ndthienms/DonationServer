@@ -13,6 +13,8 @@ namespace DonationAppDemo.DAL.Interfaces
         Task<bool> BecomeDonor(string phoneNum, string role, bool disabled, DonorDto donorDto);
         Task<bool> AccountAdmin(AccountDto accountDto, AdminDto adminDto);
         Task<CampaignStatistics?> AddDonation(PaymentResponseDto paymentResponseDto);
+        Task<CampaignStatistics?> AddExpense(Expense expense);
+        Task<CampaignStatistics?> DeleteExpense(Expense expense);
         //Task<bool> CampaignRateImage(CampaignDto campaignDto);
     }
 }

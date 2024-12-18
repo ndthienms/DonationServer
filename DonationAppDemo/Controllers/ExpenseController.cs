@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using DonationAppDemo.Services.Interfaces;
 using DonationAppDemo.DTOs;
 using System.Threading.Tasks;
+using DonationAppDemo.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DonationAppDemo.Controllers
 {
@@ -12,6 +15,57 @@ namespace DonationAppDemo.Controllers
         private readonly IExpenseService _expenseService;
 
         public ExpenseController(IExpenseService expenseService)
+        {
+            _expenseService = expenseService;
+        }
+
+        [HttpGet]
+        [Route("GetListByCampaign/{campaignId}")]
+        public async Task<IActionResult> GetListByCampaign([FromRoute] int campaignId)
+        {
+            try
+            {
+                var result = await _expenseService.GetListByCampaign(campaignId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("Add/{campaignId}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "organiser")]
+        public async Task<IActionResult> Add([FromRoute] int campaignId, [FromBody] ExpenseDto expenseDto)
+        {
+            try
+            {
+                var result = await _expenseService.Add(campaignId, expenseDto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("Delete/{expenseId}/{campaignId}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "organiser")]
+        public async Task<IActionResult> Delete([FromRoute] int expenseId, [FromRoute] int campaignId, [FromBody] ExpenseDto expenseDto)
+        {
+            try
+            {
+                var result = await _expenseService.Delete(expenseId, campaignId, expenseDto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        /*public ExpenseController(IExpenseService expenseService)
         {
             _expenseService = expenseService;
         }
@@ -74,6 +128,6 @@ namespace DonationAppDemo.Controllers
             {
                 return BadRequest(ex.Message);
             }
-        }
+        }*/
     }
 }
