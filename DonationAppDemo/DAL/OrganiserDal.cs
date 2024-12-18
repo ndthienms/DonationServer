@@ -17,9 +17,9 @@ namespace DonationAppDemo.DAL
         public async Task<List<UserDto>> GetAll(int pageIndex)
         {
             var usersInformation = await _context.Organiser
+                .Where(x => x.AcceptedBy != null)
                 .Skip((pageIndex - 1) * 20)
                 .Take(20)
-                .Where(x => x.AcceptedBy != null)
                 .Join(_context.Account, user => user.AccountId, account => account.PhoneNum,
                     (user, account) => new UserDto()
                     {
