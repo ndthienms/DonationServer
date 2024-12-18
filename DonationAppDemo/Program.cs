@@ -91,6 +91,7 @@ builder.Services.AddTransient<IRecipientService, RecipientService>();
 builder.Services.AddTransient<IPostService, PostService>();
 builder.Services.AddTransient<IExpenseService, ExpenseService>();
 builder.Services.AddScoped<IGeocodingService, GeocodingService>();
+builder.Services.AddScoped<IRateCampaignService, RateCampaignService>();
 
 //builder.Services.AddHostedService<GeocodingBackgroundService>();
 // HttpContext
