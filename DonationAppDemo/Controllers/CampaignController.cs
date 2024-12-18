@@ -1,4 +1,5 @@
 ﻿using DonationAppDemo.DTOs;
+using DonationAppDemo.Models;
 using DonationAppDemo.Services;
 using DonationAppDemo.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -22,6 +23,7 @@ namespace DonationAppDemo.Controllers
 
         [HttpGet]
         [Route("GetListByAdmin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "admin")]
         public async Task<IActionResult> GetListByAdmin(int pageIndex)
         {
             try
@@ -68,11 +70,28 @@ namespace DonationAppDemo.Controllers
 
         [HttpPost]
         [Route("GetSearchedListByOrganiser/{pageIndex}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "organiser")]
         public async Task<IActionResult> GetSearchedListByOrganiser([FromRoute] int pageIndex, [FromBody] CampaignSearchADto search)
         {
             try
             {
                 var result = await _campaignService.GetSearchedListByOrganiser(pageIndex, search);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("GetSearchedListByRecipient/{pageIndex}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "recipient")]
+        public async Task<IActionResult> GetSearchedListByRecipient([FromRoute] int pageIndex, [FromBody] CampaignSearchADto search)
+        {
+            try
+            {
+                var result = await _campaignService.GetSearchedListByRecipient(pageIndex, search);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -143,6 +162,39 @@ namespace DonationAppDemo.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPut]
+        [Route("UpdateRecivedByRecipient/{campaignId}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "recipient")]
+        public async Task<IActionResult> UpdateRecivedByRecipient([FromRoute] int campaignId, [FromBody] bool received)
+        {
+            try
+            {
+                var result = await _campaignService.UpdateRecivedByRecipient(campaignId, received);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("UpdateRatedByRecipient/{campaignId}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "recipient")]
+        public async Task<IActionResult> UpdateRatedByRecipient([FromRoute] int campaignId, [FromBody] RateCampaign rateCampaign)
+        {
+            try
+            {
+                var result = await _campaignService.UpdateRatedByRecipient(campaignId, rateCampaign);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         //API Export to file Excell
         [HttpGet("ExportDonationsToExcel")]
         public IActionResult ExportDonationsToExcel(int campaignId, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate)

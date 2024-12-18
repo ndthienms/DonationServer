@@ -44,5 +44,20 @@ namespace DonationAppDemo.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet]
+        [Route("GetById/{recipientId}")]
+        public async Task<IActionResult> GetById([FromRoute] int recipientId)
+        {
+            try
+            {
+                var result = await _recipientService.GetById(recipientId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

@@ -141,6 +141,42 @@ namespace DonationAppDemo.Services
             var campaigns = await _campaignDal.GetSearchedListByOrganiser(pageIndex, search, Int32.Parse(currentUserId));
             return campaigns;
         }
+        public async Task<List<CampaignShortBDto>?> GetSearchedListByRecipient(int pageIndex, CampaignSearchADto search)
+        {
+            // Get current user
+            var handler = new JwtSecurityTokenHandler();
+            string authHeader = _httpContextAccessor.HttpContext.Request.Headers["Authorization"];
+            authHeader = authHeader.Replace("Bearer ", "");
+            var jsonToken = handler.ReadToken(authHeader);
+            var tokenS = handler.ReadJwtToken(authHeader) as JwtSecurityToken;
+            var currentUserId = tokenS.Claims.First(claim => claim.Type == "Id").Value.ToString();
+
+            // Convert type
+            if (search.StartDate != "" || search.EndDate != "")
+            {
+                if (search.EndDate == "" || search.StartDate == "")
+                {
+                    throw new Exception("Start date and End date can not be null if one of them is not null");
+                }
+            }
+            else
+            {
+                //search.StartDate = DateTime.MinValue.ToString();
+                //search.EndDate = DateTime.Now.ToString();
+
+                search.StartDate = "";
+                search.EndDate = "";
+            }
+
+            string? normalized = StringExtension.NormalizeString(search.Campaign);
+            search.Campaign = normalized == null ? "" : normalized;
+            normalized = StringExtension.NormalizeString(search.User);
+            search.User = normalized == null ? "" : normalized;
+
+            // Do search
+            var campaigns = await _campaignDal.GetSearchedListByRecipient(pageIndex, Int32.Parse(currentUserId), search);
+            return campaigns;
+        }
         public async Task<CampaignDetailBDto?> GetById(int campaignId)
         {
             var campaign = await _campaignDal.GetById(campaignId);
@@ -259,6 +295,44 @@ namespace DonationAppDemo.Services
             if (!result)
             {
                 throw new Exception("Failed to update disabled campaign");
+            }
+
+            return result;
+        }
+
+        public async Task<bool> UpdateRecivedByRecipient(int campaignId, bool received)
+        {
+            // Get current user
+            var handler = new JwtSecurityTokenHandler();
+            string authHeader = _httpContextAccessor.HttpContext.Request.Headers["Authorization"];
+            authHeader = authHeader.Replace("Bearer ", "");
+            var jsonToken = handler.ReadToken(authHeader);
+            var tokenS = handler.ReadJwtToken(authHeader) as JwtSecurityToken;
+            var currentUserId = tokenS.Claims.First(claim => claim.Type == "Id").Value.ToString();
+
+            var result = await _campaignDal.UpdateRecivedByRecipient(campaignId, Int32.Parse(currentUserId), received);
+            if (!result)
+            {
+                throw new Exception("Failed to update received campaign by recipient");
+            }
+
+            return result;
+        }
+
+        public async Task<bool> UpdateRatedByRecipient(int campaignId, RateCampaign rateCampaign)
+        {
+            // Get current user
+            var handler = new JwtSecurityTokenHandler();
+            string authHeader = _httpContextAccessor.HttpContext.Request.Headers["Authorization"];
+            authHeader = authHeader.Replace("Bearer ", "");
+            var jsonToken = handler.ReadToken(authHeader);
+            var tokenS = handler.ReadJwtToken(authHeader) as JwtSecurityToken;
+            var currentUserId = tokenS.Claims.First(claim => claim.Type == "Id").Value.ToString();
+
+            var result = await _campaignDal.UpdateRatedByRecipient(campaignId, Int32.Parse(currentUserId), rateCampaign);
+            if (!result)
+            {
+                throw new Exception("Failed to update received campaign by recipient");
             }
 
             return result;
